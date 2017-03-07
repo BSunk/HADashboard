@@ -2,34 +2,32 @@ package com.bsunk.hadashboard;
 
 import android.support.multidex.MultiDexApplication;
 
-import com.bsunk.hadashboard.di.components.DaggerStorageComponent;
-import com.bsunk.hadashboard.di.components.StorageComponent;
-import com.bsunk.hadashboard.di.modules.StorageModule;
+import com.bsunk.hadashboard.di.components.ApplicationComponent;
+import com.bsunk.hadashboard.di.components.DaggerApplicationComponent;
+import com.bsunk.hadashboard.di.modules.ApplicationModule;
 
 import timber.log.Timber;
 
 /**
- * Created by Bharat on 3/4/2017.
+ * Created by Bryan on 3/4/2017.
  */
 
 public class HADashboardApplication extends MultiDexApplication {
 
-    private StorageComponent storageComponent;
+    ApplicationComponent applicationComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
         if (BuildConfig.DEBUG) Timber.plant(new Timber.DebugTree());
-
-        storageComponent = DaggerStorageComponent.builder()
-                .storageModule(new StorageModule(this))
+        applicationComponent = DaggerApplicationComponent
+                .builder()
+                .applicationModule(new ApplicationModule(this))
                 .build();
-
     }
 
-    public StorageComponent getStorageComponent() {
-        return storageComponent;
+    public ApplicationComponent getApplicationComponent() {
+        return applicationComponent;
     }
-
 
 }

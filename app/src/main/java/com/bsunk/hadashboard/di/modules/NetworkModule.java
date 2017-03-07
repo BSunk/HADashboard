@@ -17,19 +17,19 @@ public class NetworkModule {
 
     @Singleton
     @Provides
-    public OkHttpClient providesOKHttpClient() {
+    OkHttpClient providesOKHttpClient() {
         return new OkHttpClient();
     }
 
     @Singleton
     @Provides
-    public HAWebSocketListener provideHAWebSocketListener() {
+    HAWebSocketListener provideHAWebSocketListener() {
         return new HAWebSocketListener();
     }
 
     @Singleton
     @Provides
-    public WebSocketConnection providesWebSocketConnection(OkHttpClient client, HAWebSocketListener listener) {
+    WebSocketConnection providesWebSocketConnection(OkHttpClient client, HAWebSocketListener listener) {
         return new WebSocketConnection(client, listener);
     }
 

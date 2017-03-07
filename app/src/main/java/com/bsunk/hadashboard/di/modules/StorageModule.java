@@ -1,11 +1,8 @@
 package com.bsunk.hadashboard.di.modules;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.content.Context;
 
-import com.bsunk.hadashboard.HADashboardApplication;
-
-import javax.inject.Singleton;
+import com.bsunk.hadashboard.data.local.SharedPrefHelper;
 
 import dagger.Module;
 import dagger.Provides;
@@ -16,14 +13,9 @@ import dagger.Provides;
 @Module
 public class StorageModule {
 
-    HADashboardApplication application;
-
-    public StorageModule(HADashboardApplication application) {this.application = application; }
-
-    @Singleton
     @Provides
-    SharedPreferences provideShardPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(application);
+    SharedPrefHelper providesSharedPrefHelper(Context context) {
+        return new SharedPrefHelper(context);
     }
 
 }

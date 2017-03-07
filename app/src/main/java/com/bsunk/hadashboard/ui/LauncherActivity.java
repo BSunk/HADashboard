@@ -3,32 +3,34 @@ package com.bsunk.hadashboard.ui;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.bsunk.hadashboard.HADashboardApplication;
 import com.bsunk.hadashboard.R;
-import com.bsunk.hadashboard.data.remote.WebSocketConnection;
-import com.bsunk.hadashboard.di.components.DaggerNetworkComponent;
+import com.bsunk.hadashboard.data.local.SharedPrefHelper;
+import com.bsunk.hadashboard.di.components.DaggerLauncherActivityComponent;
+import com.bsunk.hadashboard.di.modules.StorageModule;
 
 import javax.inject.Inject;
 
 public class LauncherActivity extends AppCompatActivity {
 
     @Inject
-    WebSocketConnection webSocketConnection;
+    SharedPrefHelper sharedPrefHelper;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
+        DaggerLauncherActivityComponent
+                .builder()
+                .applicationComponent(((HADashboardApplication)getApplication()).getApplicationComponent())
+                .storageModule(new StorageModule())
+                .build()
+                .inject(this);
 
-        DaggerNetworkComponent.builder().build().inject(this);
-        connect();
-        close();
-    }
-
-    private void connect() {
-        webSocketConnection.connect("192.168.10.101", "8123");
-    }
-
-    private void  close() {
-        webSocketConnection.close();
+        if (sharedPrefHelper.getIP() != null || sharedPrefHelper.getPort() != null) {
+            MainActivity.getStartIntent(getApplicationContext());
+        } else {
+            WelcomeActivity.getStartIntent(getApplicationContext());
+        }
     }
 }
