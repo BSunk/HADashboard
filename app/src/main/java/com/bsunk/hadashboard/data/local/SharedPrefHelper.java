@@ -15,6 +15,7 @@ public class SharedPrefHelper {
     private static final String PREF_KEY_PW = "PREF_KEY_PW";
     private static final String PREF_KEY_IP = "PREF_KEY_IP";
     private static final String PREF_KEY_PORT = "PREF_KEY_PORT";
+    private static final String PREF_KEY_FIRST_LAUNCH = "PREF_KEY_FIRST_LAUNCH";
 
     private SharedPreferences mSharedPreferences;
 
@@ -35,6 +36,10 @@ public class SharedPrefHelper {
         mSharedPreferences.edit().putString(PREF_KEY_PW, pw).apply();
     }
 
+    public void putFirstLaunch(boolean isFirst) {
+        mSharedPreferences.edit().putBoolean(PREF_KEY_FIRST_LAUNCH, isFirst).apply();
+    }
+
     public String getIP() {
         String ip = mSharedPreferences.getString(PREF_KEY_IP, null);
         if(ip == null) return null;
@@ -51,6 +56,9 @@ public class SharedPrefHelper {
         String pw = mSharedPreferences.getString(PREF_KEY_PW, null);
         if(pw == null) return null;
         return pw;
+    }
+    public Boolean isFirstLaunch() {
+        return mSharedPreferences.getBoolean(PREF_KEY_FIRST_LAUNCH, false);
     }
 
 }

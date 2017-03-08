@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.redbooth.WelcomePageLayout
+    android:id="@+id/welcome_page_1"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page1">
+
+    <TextView
+        android:id="@+id/welcome_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="30sp"
+        android:textColor="@android:color/white"
+        android:text="@string/welcome_message"/>
+
+    <TextView
+        android:id="@+id/sub_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/welcome_message"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:text="@string/sub_message"/>
+
+
+</com.redbooth.WelcomePageLayout>

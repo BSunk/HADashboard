@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.redbooth.WelcomePageLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/welcome_page_1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page2">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerHorizontal="true"
+            android:text="@string/welcome_page_2_title"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/IP_input_layout_name"
+            android:layout_width="200dp"
+            android:layout_below="@+id/title"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp">
+
+            <EditText
+                android:id="@+id/ip_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/IP_textview" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/port_input_layout_name"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/IP_input_layout_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp">
+
+            <EditText
+                android:id="@+id/port_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/port_textview" />
+
+        </android.support.design.widget.TextInputLayout>
+
+    </RelativeLayout>
+
+
+</com.redbooth.WelcomePageLayout>

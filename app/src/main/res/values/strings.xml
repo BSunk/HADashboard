@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">HA Dashboard</string>
+    <string name="welcome_message">Welcome</string>
+    <string name="sub_message">Let\'s set things up!</string>
+    <string name="IP_textview">IP Address/Name</string>
+    <string name="port_textview">Port</string>
+    <string name="welcome_page_2_title">Enter your Home Assistant Server details</string>
 </resources>
