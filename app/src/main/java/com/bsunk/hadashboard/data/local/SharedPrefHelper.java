@@ -36,8 +36,8 @@ public class SharedPrefHelper {
         mSharedPreferences.edit().putString(PREF_KEY_PW, pw).apply();
     }
 
-    public void putFirstLaunch(boolean isFirst) {
-        mSharedPreferences.edit().putBoolean(PREF_KEY_FIRST_LAUNCH, isFirst).apply();
+    public void putFirstLaunchCompleted() {
+        mSharedPreferences.edit().putBoolean(PREF_KEY_FIRST_LAUNCH, true).apply();
     }
 
     public String getIP() {
@@ -57,7 +57,7 @@ public class SharedPrefHelper {
         if(pw == null) return null;
         return pw;
     }
-    public Boolean isFirstLaunch() {
+    public Boolean getWelcomeScreenLaunched() {
         return mSharedPreferences.getBoolean(PREF_KEY_FIRST_LAUNCH, false);
     }
 

@@ -9,6 +9,7 @@ import com.bsunk.hadashboard.R;
 import com.bsunk.hadashboard.data.local.SharedPrefHelper;
 import com.bsunk.hadashboard.di.components.DaggerLauncherActivityComponent;
 import com.bsunk.hadashboard.di.modules.StorageModule;
+import com.bsunk.hadashboard.ui.main.MainActivity;
 
 import javax.inject.Inject;
 
@@ -41,7 +42,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     private void initialize() {
         Intent intent;
-        if (!sharedPrefHelper.isFirstLaunch()) {
+        if (sharedPrefHelper.getWelcomeScreenLaunched()) {
             intent = MainActivity.getStartIntent(getApplicationContext());
         } else {
             intent = WelcomeActivity.getStartIntent(getApplicationContext());
