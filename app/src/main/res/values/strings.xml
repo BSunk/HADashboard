@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HA Dashboard</string>
+    <string name="app_name">HA Panel</string>
     <string name="welcome_message">Welcome</string>
     <string name="sub_message">Let\'s set things up!</string>
     <string name="IP_textview">IP Address/Name</string>
