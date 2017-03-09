@@ -17,11 +17,6 @@ import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements MainActivityContract.View{
 
-    @Inject
-    SharedPrefHelper sharedPrefHelper;
-    @Inject
-    WebSocketConnection connection;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

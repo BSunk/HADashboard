@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
-import com.bsunk.hapanel.data.local.SharedPrefHelper;
+import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.di.components.DaggerLauncherActivityComponent;
 import com.bsunk.hapanel.di.modules.StorageModule;
 import com.bsunk.hapanel.ui.main.MainActivity;
@@ -17,7 +17,7 @@ import javax.inject.Inject;
 public class LauncherActivity extends AppCompatActivity {
 
     @Inject
-    SharedPrefHelper sharedPrefHelper;
+    DataManager dataManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     private void initialize() {
         Intent intent;
-        if (sharedPrefHelper.getWelcomeScreenLaunched()) {
+        if (dataManager.getSharedPrefHelper().getWelcomeScreenLaunched()) {
             intent = MainActivity.getStartIntent(getApplicationContext());
         } else {
             intent = WelcomeActivity.getStartIntent(getApplicationContext());

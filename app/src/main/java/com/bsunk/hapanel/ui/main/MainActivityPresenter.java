@@ -1,5 +1,6 @@
 package com.bsunk.hapanel.ui.main;
 
+import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
 
@@ -12,10 +13,12 @@ import javax.inject.Inject;
 public class MainActivityPresenter implements MainActivityContract.Presenter {
 
     private final MainActivityContract.View mView;
+    private final DataManager dataManager;
 
     @Inject
-    MainActivityPresenter(MainActivityContract.View view, SharedPrefHelper sharedPrefHelper, WebSocketConnection connection) {
+    MainActivityPresenter(MainActivityContract.View view, DataManager dataManager) {
         mView = view;
+        this.dataManager = dataManager;
     }
 
     @Override
