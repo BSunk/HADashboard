@@ -42,11 +42,12 @@ public class LauncherActivity extends AppCompatActivity {
 
     private void initialize() {
         Intent intent;
-        if (dataManager.getSharedPrefHelper().getWelcomeScreenLaunched()) {
-            intent = MainActivity.getStartIntent(getApplicationContext());
-        } else {
-            intent = WelcomeActivity.getStartIntent(getApplicationContext());
-        }
+//        if (dataManager.getSharedPrefHelper().getWelcomeScreenLaunched()) {
+//            intent = MainActivity.getStartIntent(getApplicationContext());
+//        } else {
+//            intent = WelcomeActivity.getStartIntent(getApplicationContext());
+//        }
+        intent = MainActivity.getStartIntent(getApplicationContext());
         startActivity(intent);
     }
 }

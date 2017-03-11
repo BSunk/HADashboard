@@ -1,6 +1,5 @@
 package com.bsunk.hapanel.di.modules;
 
-import com.bsunk.hapanel.data.remote.HAWebSocketListener;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
 
 import javax.inject.Singleton;
@@ -23,14 +22,8 @@ public class NetworkModule {
 
     @Singleton
     @Provides
-    HAWebSocketListener provideHAWebSocketListener() {
-        return new HAWebSocketListener();
-    }
-
-    @Singleton
-    @Provides
-    WebSocketConnection providesWebSocketConnection(OkHttpClient client, HAWebSocketListener listener) {
-        return new WebSocketConnection(client, listener);
+    WebSocketConnection providesWebSocketConnection(OkHttpClient client) {
+        return new WebSocketConnection(client);
     }
 
 }

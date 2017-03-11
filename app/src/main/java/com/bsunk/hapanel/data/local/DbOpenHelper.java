@@ -12,8 +12,19 @@ import javax.inject.Inject;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "ha_panel_app.db";
-    public static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "ha_panel_app.db";
+    private static final int DATABASE_VERSION = 1;
+
+    final String SQL_CREATE_HA_PANEL_TABLE = "CREATE TABLE " + DatabaseContract.HAPanel.TABLE_NAME + " (" +
+            DatabaseContract.HAPanel.COLUMN_ID + " INTEGER PRIMARY KEY," +
+            DatabaseContract.HAPanel.COLUMN_ENTITY_ID + " TEXT NOT NULL," +
+            DatabaseContract.HAPanel.COLUMN_TYPE + " TEXT," +
+            DatabaseContract.HAPanel.COLUMN_STATE + " TEXT," +
+            DatabaseContract.HAPanel.COLUMN_LAST_CHANGED + " TEXT," +
+            DatabaseContract.HAPanel.COLUMN_ATTRIBUTES + " TEXT," +
+            DatabaseContract.HAPanel.COLUMN_SHOW_FLAG + " BOOLEAN," +
+            DatabaseContract.HAPanel.COLUMN_POSITION + " INTEGER" +
+            " );";
 
     @Inject
     public DbOpenHelper(Context context) {
@@ -22,23 +33,12 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
-        final String SQL_CREATE_HA_PANEL_TABLE = "CREATE TABLE " + DatabaseContract.HAPanel.TABLE_NAME + " (" +
-                DatabaseContract.HAPanel.COLUMN_ID + " INTEGER PRIMARY KEY," +
-                DatabaseContract.HAPanel.COLUMN_ENTITY_ID + " TEXT NOT NULL," +
-                DatabaseContract.HAPanel.COLUMN_TYPE + " TEXT," +
-                DatabaseContract.HAPanel.COLUMN_STATE + " TEXT," +
-                DatabaseContract.HAPanel.COLUMN_LAST_CHANGED + " TEXT," +
-                DatabaseContract.HAPanel.COLUMN_ATTRIBUTES + " TEXT," +
-                DatabaseContract.HAPanel.COLUMN_SHOW_FLAG + " BOOLEAN," +
-                DatabaseContract.HAPanel.COLUMN_POSITION + " INTEGER" +
-                " );";
-
         sqLiteDatabase.execSQL(SQL_CREATE_HA_PANEL_TABLE);
-
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
-
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS "+DatabaseContract.HAPanel.TABLE_NAME);
+        db.execSQL(SQL_CREATE_HA_PANEL_TABLE);
+    }
 }
