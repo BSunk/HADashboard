@@ -1,6 +1,6 @@
 package com.bsunk.hapanel.di.modules;
 
-import com.bsunk.hapanel.data.DataManager;
+import com.bsunk.hapanel.data.local.DatabaseHelper;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
 
 import javax.inject.Singleton;
@@ -23,8 +23,8 @@ public class NetworkModule {
 
     @Singleton
     @Provides
-    WebSocketConnection providesWebSocketConnection(OkHttpClient client) {
-        return new WebSocketConnection(client);
+    WebSocketConnection providesWebSocketConnection(OkHttpClient client, DatabaseHelper databaseHelper) {
+        return new WebSocketConnection(client, databaseHelper);
     }
 
 }

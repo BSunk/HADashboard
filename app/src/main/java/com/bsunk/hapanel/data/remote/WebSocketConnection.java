@@ -1,5 +1,8 @@
 package com.bsunk.hapanel.data.remote;
 
+import com.bsunk.hapanel.R;
+import com.bsunk.hapanel.data.DataManager;
+import com.bsunk.hapanel.data.local.DatabaseHelper;
 import com.bsunk.hapanel.data.model.DeviceModel;
 
 import org.json.JSONArray;
@@ -11,7 +14,14 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -38,11 +48,13 @@ public class WebSocketConnection extends WebSocketListener {
     private int id_counter=1;
 
     private WebSocket ws;
+    private DatabaseHelper dataBaseHelper;
 
     @Inject
-    public WebSocketConnection(OkHttpClient client)
+    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper)
     {
         mClient = client;
+        this.dataBaseHelper = dataBaseHelper;
     }
 
     public void connect(String ip, String port, char[] pw) {
@@ -85,7 +97,7 @@ public class WebSocketConnection extends WebSocketListener {
                         Timber.v("Auth failed");
                         break;
                     case TYPE_RESULT:
-                        parseStateMessage(text);
+                        parseStateData(text);
                         break;
                     case TYPE_EVENT:
                         break;
@@ -143,9 +155,8 @@ public class WebSocketConnection extends WebSocketListener {
         }
     }
 
-    private void parseStateMessage(String data) {
-
-        Observable<ArrayList<DeviceModel>> parseStatesObservable = Observable.create(e -> {
+    private Observable<ArrayList<DeviceModel>> parseStateMessageObservable(String data) {
+        return Observable.create(e -> {
             try {
                 ArrayList<DeviceModel> devices = new ArrayList<>();
                 JSONObject statesResult = new JSONObject(data);
@@ -162,23 +173,21 @@ public class WebSocketConnection extends WebSocketListener {
                 e.onError(j);
             }
         });
-
-        parseStatesObservable.subscribeWith(new DisposableObserver<ArrayList<DeviceModel>>() {
-            @Override
-            public void onNext(ArrayList<DeviceModel> deviceModels) {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
     }
 
+    private void parseStateData(String data) {
+       parseStateMessageObservable(data).flatMapIterable(deviceModels -> deviceModels)
+               .flatMap(deviceModel -> dataBaseHelper.addDevice(deviceModel))
+               .subscribeOn(Schedulers.io())
+               .subscribeWith(new Observer<Long>() {
+                   @Override
+                   public void onSubscribe(Disposable d) {}
+                   @Override
+                   public void onNext(Long aLong) {Timber.v(aLong.toString());}
+                   @Override
+                   public void onError(Throwable e) {Timber.v(e);}
+                   @Override
+                   public void onComplete() {}
+               });
+    }
 }
