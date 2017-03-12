@@ -27,6 +27,8 @@ public class DataManager {
         return sharedPrefHelper;
     }
 
-    public WebSocketConnection getWebSocketConnection() {return webSocketConnection;}
+    public WebSocketConnection getWebSocketConnection() {
+        return webSocketConnection;
+    }
 
 }

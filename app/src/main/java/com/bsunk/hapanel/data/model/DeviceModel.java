@@ -1,5 +1,7 @@
 package com.bsunk.hapanel.data.model;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by Bharat on 3/10/2017.
  */
@@ -10,7 +12,7 @@ public class DeviceModel {
     private String last_changed;
     private String attributes;
 
-    public DeviceModel(String entity_id, String state, String last_changed, String attributes) {
+    public DeviceModel(@NonNull String entity_id, String state, String last_changed, String attributes) {
         this.entity_id = entity_id;
         this.state = state;
         this.last_changed = last_changed;

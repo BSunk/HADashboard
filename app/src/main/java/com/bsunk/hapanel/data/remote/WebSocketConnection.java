@@ -1,16 +1,22 @@
 package com.bsunk.hapanel.data.remote;
 
+import com.bsunk.hapanel.data.model.DeviceModel;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.observers.DisposableObserver;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
-import okio.ByteString;
 import timber.log.Timber;
 
 /**
@@ -24,6 +30,8 @@ public class WebSocketConnection extends WebSocketListener {
     private static final String TYPE_AUTH_OK = "auth_ok";
     private static final String TYPE_AUTH_REQUIRED = "auth_required";
     private static final String TYPE_AUTH_INVALID = "auth_invalid";
+    private static final String TYPE_RESULT = "result";
+    private static final String TYPE_EVENT = "event";
 
     private final OkHttpClient mClient;
     private char[] pw;
@@ -54,20 +62,11 @@ public class WebSocketConnection extends WebSocketListener {
     }
 
     @Override
-    public void onOpen(WebSocket webSocket, Response response) {
-//        webSocket.close(NORMAL_CLOSURE_STATUS, "Goodbye!");
-
-//        webSocket.send("{\n" +
-//                "  \"id\": 18,\n" +
-//                "  \"type\": \"subscribe_events\",\n" +
-//                "  \"event_type\": \"state_changed\"\n" +
-//                "}");
-    }
+    public void onOpen(WebSocket webSocket, Response response) {}
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
         Timber.v("Receiving: " + text);
-
         try {
             JSONObject message = new JSONObject(text);
             String type = message.getString("type");
@@ -75,8 +74,8 @@ public class WebSocketConnection extends WebSocketListener {
                 switch(type) {
                     case TYPE_AUTH_OK:
                         Timber.v("Successfully connected!");
-                        sendSubscribeToEvents();
                         sendRequestDeviceStates();
+                        sendSubscribeToEvents();
                         break;
                     case TYPE_AUTH_REQUIRED:
                         Timber.v("Password Required");
@@ -85,12 +84,16 @@ public class WebSocketConnection extends WebSocketListener {
                     case TYPE_AUTH_INVALID:
                         Timber.v("Auth failed");
                         break;
+                    case TYPE_RESULT:
+                        parseStateMessage(text);
+                        break;
+                    case TYPE_EVENT:
+                        break;
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -138,6 +141,44 @@ public class WebSocketConnection extends WebSocketListener {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void parseStateMessage(String data) {
+
+        Observable<ArrayList<DeviceModel>> parseStatesObservable = Observable.create(e -> {
+            try {
+                ArrayList<DeviceModel> devices = new ArrayList<>();
+                JSONObject statesResult = new JSONObject(data);
+                JSONArray result = statesResult.getJSONArray("result");
+                for(int i=0; i<result.length(); i++) {
+                    JSONObject device = result.getJSONObject(i);
+                    devices.add(new DeviceModel(device.getString("entity_id"),
+                            device.getString("state"),
+                            device.getString("last_updated"),
+                            device.getString("attributes")));
+                }
+                e.onNext(devices);
+            } catch (JSONException j) {
+                e.onError(j);
+            }
+        });
+
+        parseStatesObservable.subscribeWith(new DisposableObserver<ArrayList<DeviceModel>>() {
+            @Override
+            public void onNext(ArrayList<DeviceModel> deviceModels) {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
 }

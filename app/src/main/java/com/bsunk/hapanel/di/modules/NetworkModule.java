@@ -1,5 +1,6 @@
 package com.bsunk.hapanel.di.modules;
 
+import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
 
 import javax.inject.Singleton;
