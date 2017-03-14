@@ -1,7 +1,5 @@
 package com.bsunk.hapanel.data.remote;
 
-import com.bsunk.hapanel.R;
-import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.local.DatabaseHelper;
 import com.bsunk.hapanel.data.model.DeviceModel;
 
@@ -14,13 +12,8 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -155,6 +148,22 @@ public class WebSocketConnection extends WebSocketListener {
         }
     }
 
+    private void parseStateData(String data) {
+        parseStateMessageObservable(data)
+                .flatMap(deviceModels -> dataBaseHelper.bulkAddDevices(deviceModels))
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new Observer<Void>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {}
+                    @Override
+                    public void onNext(Void aVoid) {}
+                    @Override
+                    public void onError(Throwable e) {}
+                    @Override
+                    public void onComplete() {}
+                });
+    }
+
     private Observable<ArrayList<DeviceModel>> parseStateMessageObservable(String data) {
         return Observable.create(e -> {
             try {
@@ -173,21 +182,5 @@ public class WebSocketConnection extends WebSocketListener {
                 e.onError(j);
             }
         });
-    }
-
-    private void parseStateData(String data) {
-       parseStateMessageObservable(data).flatMapIterable(deviceModels -> deviceModels)
-               .flatMap(deviceModel -> dataBaseHelper.addDevice(deviceModel))
-               .subscribeOn(Schedulers.io())
-               .subscribeWith(new Observer<Long>() {
-                   @Override
-                   public void onSubscribe(Disposable d) {}
-                   @Override
-                   public void onNext(Long aLong) {Timber.v(aLong.toString());}
-                   @Override
-                   public void onError(Throwable e) {Timber.v(e);}
-                   @Override
-                   public void onComplete() {}
-               });
     }
 }

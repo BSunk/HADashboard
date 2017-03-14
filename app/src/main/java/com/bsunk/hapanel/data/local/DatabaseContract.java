@@ -15,7 +15,7 @@ package com.bsunk.hapanel.data.local;
         static final String COLUMN_STATE = "state";
         static final String COLUMN_LAST_CHANGED = "last_changed";
         static final String COLUMN_POSITION = "position";
-        static final String COLUMN_SHOW_FLAG = "show_flag";
+        static final String COLUMN_HIDE_FLAG = "hide_flag";
 
     }
 }
