@@ -1,7 +1,9 @@
 package com.bsunk.hapanel.data.remote;
 
+import android.content.ContentValues;
+
+import com.bsunk.hapanel.data.local.DatabaseContract;
 import com.bsunk.hapanel.data.local.DatabaseHelper;
-import com.bsunk.hapanel.data.model.DeviceModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +41,7 @@ public class WebSocketConnection extends WebSocketListener {
     private final OkHttpClient mClient;
     private char[] pw;
     private int id_counter=1;
+    private boolean stateResult = false;
 
     private WebSocket ws;
     private DatabaseHelper dataBaseHelper;
@@ -90,7 +93,10 @@ public class WebSocketConnection extends WebSocketListener {
                         Timber.v("Auth failed");
                         break;
                     case TYPE_RESULT:
-                        parseStateData(text);
+                        if(stateResult) {
+                            parseStateData(text);
+                            stateResult=false;
+                        }
                         break;
                     case TYPE_EVENT:
                         break;
@@ -143,6 +149,7 @@ public class WebSocketConnection extends WebSocketListener {
             subscribeObject.put("type", "get_states");
             ws.send(subscribeObject.toString());
             id_counter++;
+            stateResult=true;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -150,32 +157,36 @@ public class WebSocketConnection extends WebSocketListener {
 
     private void parseStateData(String data) {
         parseStateMessageObservable(data)
-                .flatMap(deviceModels -> dataBaseHelper.bulkAddDevices(deviceModels))
+                .flatMapIterable(contentValues -> contentValues)
+                .flatMap(contentValue -> dataBaseHelper.addDevice(contentValue))
+                .doFinally(() -> dataBaseHelper.close())
                 .subscribeOn(Schedulers.io())
-                .subscribeWith(new Observer<Void>() {
+                .subscribeWith(new Observer<Long>() {
                     @Override
-                    public void onSubscribe(Disposable d) {}
+                    public void onSubscribe(Disposable d) {dataBaseHelper.open();}
                     @Override
-                    public void onNext(Void aVoid) {}
+                    public void onNext(Long aLong) {}
                     @Override
                     public void onError(Throwable e) {}
                     @Override
-                    public void onComplete() {}
+                    public void onComplete() {dataBaseHelper.close();}
                 });
     }
 
-    private Observable<ArrayList<DeviceModel>> parseStateMessageObservable(String data) {
+    private Observable<ArrayList<ContentValues>> parseStateMessageObservable(String data) {
         return Observable.create(e -> {
             try {
-                ArrayList<DeviceModel> devices = new ArrayList<>();
+                ArrayList<ContentValues> devices = new ArrayList<>();
                 JSONObject statesResult = new JSONObject(data);
                 JSONArray result = statesResult.getJSONArray("result");
                 for(int i=0; i<result.length(); i++) {
                     JSONObject device = result.getJSONObject(i);
-                    devices.add(new DeviceModel(device.getString("entity_id"),
-                            device.getString("state"),
-                            device.getString("last_updated"),
-                            device.getString("attributes")));
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, device.getString("entity_id"));
+                    values.put(DatabaseContract.HAPanel.COLUMN_STATE, device.getString("state"));
+                    values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, device.getString("attributes"));
+                    values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, device.getString("last_updated"));
+                    devices.add(values);
                 }
                 e.onNext(devices);
             } catch (JSONException j) {

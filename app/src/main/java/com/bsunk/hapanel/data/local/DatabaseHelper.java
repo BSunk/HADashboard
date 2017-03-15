@@ -27,7 +27,9 @@ public class DatabaseHelper {
             DatabaseContract.HAPanel.COLUMN_ENTITY_ID,
             DatabaseContract.HAPanel.COLUMN_STATE,
             DatabaseContract.HAPanel.COLUMN_LAST_CHANGED,
-            DatabaseContract.HAPanel.COLUMN_ATTRIBUTES
+            DatabaseContract.HAPanel.COLUMN_ATTRIBUTES,
+            DatabaseContract.HAPanel.COLUMN_POSITION,
+            DatabaseContract.HAPanel.COLUMN_HIDE_FLAG
     };
 
     @Inject
@@ -35,26 +37,19 @@ public class DatabaseHelper {
         dbhandler = dbOpenHelper;
     }
 
-    private void open(){
+    public void open(){
         Timber.v("Database Opened");
         database = dbhandler.getWritableDatabase();
     }
 
-    private void close(){
+    public void close(){
         Timber.v("Database Closed");
         dbhandler.close();
     }
 
-    public Observable<Long> addDevice(DeviceModel deviceModel) {
+    public Observable<Long> addDevice(ContentValues values) {
         return Observable.create(e -> {
-            open();
-            ContentValues values = new ContentValues();
-            values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, deviceModel.getEntity_id());
-            values.put(DatabaseContract.HAPanel.COLUMN_STATE, deviceModel.getState());
-            values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, deviceModel.getAttributes());
-            values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, deviceModel.getLast_changed());
-            values.put(DatabaseContract.HAPanel.COLUMN_HIDE_FLAG, false);
-            long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
+            long id = database.insertWithOnConflict(DatabaseContract.HAPanel.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             if(id!=-1) {
                 e.onNext(id);
                 Timber.v("Added device with id: " + id);
@@ -62,48 +57,31 @@ public class DatabaseHelper {
             else {
                 e.onError(new Throwable("Error inserting into database!"));
             }
-            close();
         });
     }
 
-    public Observable<Long> updateDevice(DeviceModel deviceModel) {
+    public Observable<Long> updateDevice(ContentValues values, final String entityID) {
         return Observable.create(e -> {
-            open();
-            ContentValues values = new ContentValues();
-            values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, deviceModel.getEntity_id());
-            values.put(DatabaseContract.HAPanel.COLUMN_STATE, deviceModel.getState());
-            values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, deviceModel.getAttributes());
-            values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, deviceModel.getLast_changed());
-            values.put(DatabaseContract.HAPanel.COLUMN_HIDE_FLAG, false);
-            long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
+            long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=" + entityID, null);
             if(id!=-1) {
                 e.onNext(id);
-                Timber.v("Added device with id: " + id);
+                Timber.v("Updated device with id: " + id);
             }
             else {
-                e.onError(new Throwable("Error inserting into database!"));
+                e.onError(new Throwable("Error updating database!"));
             }
-            close();
         });
     }
 
-    public Observable<Void> bulkAddDevices(ArrayList<DeviceModel> list) {
+    public Observable<Void> bulkAddDevices(ArrayList<ContentValues> list) {
         return Observable.create(e -> {
-            open();
             for(int i=0; i<list.size(); i++) {
-                ContentValues values = new ContentValues();
-                DeviceModel deviceModel = list.get(i);
-                values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, deviceModel.getEntity_id());
-                values.put(DatabaseContract.HAPanel.COLUMN_STATE, deviceModel.getState());
-                values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, deviceModel.getAttributes());
-                values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, deviceModel.getLast_changed());
-                values.put(DatabaseContract.HAPanel.COLUMN_HIDE_FLAG, false);
+                ContentValues values = list.get(i);
                 long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
                 Timber.v("Added device with id: " + id);
                 if(id==-1) {e.onError(new Throwable("Error inserting into database!"));}
             }
             e.onComplete();
-            close();
         });
     }
 
@@ -114,7 +92,7 @@ public class DatabaseHelper {
                     DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?",new String[]{entityID},null,null, null, null);
             if (cursor != null) {
                 cursor.moveToFirst();
-                DeviceModel deviceModel = new DeviceModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+                DeviceModel deviceModel = new DeviceModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4), cursor.getInt(5));
                 Timber.v("Fetched device: " + deviceModel.toString());
                 e.onNext(deviceModel);
             }

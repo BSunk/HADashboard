@@ -1,7 +1,5 @@
 package com.bsunk.hapanel.data.model;
 
-import android.support.annotation.NonNull;
-
 /**
  * Created by Bharat on 3/10/2017.
  */
@@ -11,12 +9,23 @@ public class DeviceModel {
     private String state;
     private String last_changed;
     private String attributes;
+    private int position;
+    private int hide;
 
-    public DeviceModel(@NonNull String entity_id, String state, String last_changed, String attributes) {
+    public DeviceModel(String entity_id, String state, String last_changed, String attributes) {
         this.entity_id = entity_id;
         this.state = state;
         this.last_changed = last_changed;
         this.attributes = attributes;
+    }
+
+    public DeviceModel(String entity_id, String state, String last_changed, String attributes, int position, int hide) {
+        this.entity_id = entity_id;
+        this.state = state;
+        this.last_changed = last_changed;
+        this.attributes = attributes;
+        this.position = position;
+        this.hide = hide;
     }
 
     public String getEntity_id() {
@@ -51,6 +60,22 @@ public class DeviceModel {
         this.attributes = attributes;
     }
 
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public int isHide() {
+        return hide;
+    }
+
+    public void setHide(int hide) {
+        this.hide = hide;
+    }
+
     @Override
     public String toString() {
         return "DeviceModel{" +
@@ -58,6 +83,8 @@ public class DeviceModel {
                 ", state='" + state + '\'' +
                 ", last_changed='" + last_changed + '\'' +
                 ", attributes='" + attributes + '\'' +
+                ", position=" + position +
+                ", hide=" + hide +
                 '}';
     }
 }
