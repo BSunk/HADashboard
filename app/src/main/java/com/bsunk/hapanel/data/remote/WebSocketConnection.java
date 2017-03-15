@@ -158,8 +158,8 @@ public class WebSocketConnection extends WebSocketListener {
     private void parseStateData(String data) {
         parseStateMessageObservable(data)
                 .flatMapIterable(contentValues -> contentValues)
-                .flatMap(contentValue -> dataBaseHelper.addDevice(contentValue))
-                .doFinally(() -> dataBaseHelper.close())
+                .flatMap(contentValue -> dataBaseHelper.addOrUpdateDevice(contentValue))
+//                .doFinally(() -> dataBaseHelper.close())
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(new Observer<Long>() {
                     @Override

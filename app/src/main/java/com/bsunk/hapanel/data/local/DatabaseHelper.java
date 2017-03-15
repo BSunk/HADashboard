@@ -47,9 +47,25 @@ public class DatabaseHelper {
         dbhandler.close();
     }
 
+    public Observable<Long> addOrUpdateDevice(ContentValues values) {
+        database.beginTransaction();
+        String selectQuery = "SELECT * FROM " + DatabaseContract.HAPanel.TABLE_NAME  + " WHERE " +  DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?";
+        Cursor cursor = database.rawQuery(selectQuery, new String[] {values.getAsString("entity_id")});
+        database.setTransactionSuccessful();
+        database.endTransaction();
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return addDevice(values);
+        }
+        else {
+            cursor.close();
+            return updateDevice(values);
+        }
+    }
+
     public Observable<Long> addDevice(ContentValues values) {
         return Observable.create(e -> {
-            long id = database.insertWithOnConflict(DatabaseContract.HAPanel.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
             if(id!=-1) {
                 e.onNext(id);
                 Timber.v("Added device with id: " + id);
@@ -60,9 +76,10 @@ public class DatabaseHelper {
         });
     }
 
-    public Observable<Long> updateDevice(ContentValues values, final String entityID) {
+    public Observable<Long> updateDevice(ContentValues values) {
+        String entityID = values.getAsString("entity_id");
         return Observable.create(e -> {
-            long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=" + entityID, null);
+            long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
             if(id!=-1) {
                 e.onNext(id);
                 Timber.v("Updated device with id: " + id);
