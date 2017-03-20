@@ -15,11 +15,17 @@
         <activity android:name=".ui.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.main.MainActivity" />
-        <activity android:name=".ui.WelcomeActivity"/>
+        <activity android:name=".ui.WelcomeActivity" />
+
+        <service
+            android:name=".services.ConnectionService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

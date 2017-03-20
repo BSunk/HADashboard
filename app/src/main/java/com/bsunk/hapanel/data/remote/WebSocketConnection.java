@@ -159,7 +159,6 @@ public class WebSocketConnection extends WebSocketListener {
         parseStateMessageObservable(data)
                 .flatMapIterable(contentValues -> contentValues)
                 .flatMap(contentValue -> dataBaseHelper.addOrUpdateDevice(contentValue))
-//                .doFinally(() -> dataBaseHelper.close())
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(new Observer<Long>() {
                     @Override
@@ -167,9 +166,11 @@ public class WebSocketConnection extends WebSocketListener {
                     @Override
                     public void onNext(Long aLong) {}
                     @Override
-                    public void onError(Throwable e) {}
+                    public void onError(Throwable e) {Timber.v(e);}
                     @Override
-                    public void onComplete() {dataBaseHelper.close();}
+                    public void onComplete() {
+                        dataBaseHelper.close();
+                    }
                 });
     }
 

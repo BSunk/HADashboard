@@ -11,6 +11,8 @@ public interface MainActivityContract {
 
     interface View extends BaseView<Presenter> {
 
+        void startConnectionService();
+
     }
 
     interface Presenter extends BasePresenter {

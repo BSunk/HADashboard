@@ -1,8 +1,11 @@
 package com.bsunk.hapanel.ui.main;
 
+import android.content.Intent;
+
 import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
+import com.bsunk.hapanel.services.ConnectionService;
 
 import javax.inject.Inject;
 
@@ -23,17 +26,6 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
     }
 
     @Override
-    public void connectToServer() {
-        //String pw = dataManager.getSharedPrefHelper().getPW();
-        String pw = "barru586";
-        char[] charArray = pw.toCharArray();
-      //  TODO: Add password hashing and storage
-        dataManager.getWebSocketConnection().connect("192.168.10.113", "8123", charArray);
-        //dataManager.getWebSocketConnection().close();
-    }
-
-
-    @Override
     public void subscribe() {
 
     }
@@ -41,5 +33,10 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
     @Override
     public void unsubscribe() {
 
+    }
+
+    @Override
+    public void connectToServer() {
+        mView.startConnectionService();
     }
 }

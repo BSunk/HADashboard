@@ -73,6 +73,7 @@ public class DatabaseHelper {
             else {
                 e.onError(new Throwable("Error inserting into database!"));
             }
+            e.onComplete();
         });
     }
 
@@ -82,11 +83,12 @@ public class DatabaseHelper {
             long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
             if(id!=-1) {
                 e.onNext(id);
-                Timber.v("Updated device with id: " + id);
+                Timber.v("Updated device with entity id: " + values.getAsString("entity_id"));
             }
             else {
                 e.onError(new Throwable("Error updating database!"));
             }
+            e.onComplete();
         });
     }
 
@@ -119,4 +121,5 @@ public class DatabaseHelper {
             cursor.close();
         });
     }
+
 }

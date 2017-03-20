@@ -13,6 +13,7 @@ import com.bsunk.hapanel.di.components.DaggerMainActivityComponent;
 import com.bsunk.hapanel.di.modules.MainActivityPresenterModule;
 import com.bsunk.hapanel.di.modules.NetworkModule;
 import com.bsunk.hapanel.di.modules.StorageModule;
+import com.bsunk.hapanel.services.ConnectionService;
 
 import javax.inject.Inject;
 
@@ -29,8 +30,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         DaggerMainActivityComponent
                 .builder()
                 .applicationComponent(((HAApplication)getApplication()).getApplicationComponent())
-                .storageModule(new StorageModule())
-                .networkModule(new NetworkModule())
                 .mainActivityPresenterModule(new MainActivityPresenterModule(this))
                 .build()
                 .inject(this);
@@ -41,5 +40,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         return new Intent(context, MainActivity.class);
     }
 
+    public void startConnectionService() {
+        Intent intent = new Intent(this, ConnectionService.class);
+        startService(intent);
+    }
 
 }

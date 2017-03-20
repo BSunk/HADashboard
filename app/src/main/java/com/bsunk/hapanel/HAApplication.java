@@ -2,9 +2,12 @@ package com.bsunk.hapanel;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.di.components.ApplicationComponent;
 import com.bsunk.hapanel.di.components.DaggerApplicationComponent;
 import com.bsunk.hapanel.di.modules.ApplicationModule;
+
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -15,6 +18,9 @@ import timber.log.Timber;
 public class HAApplication extends MultiDexApplication {
 
     ApplicationComponent applicationComponent;
+
+    @Inject
+    DataManager dataManager;
 
     @Override
     public void onCreate() {
