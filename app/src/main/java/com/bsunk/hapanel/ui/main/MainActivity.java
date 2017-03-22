@@ -45,4 +45,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         startService(intent);
     }
 
+    public void stopConnectionService() {
+        Intent intent = new Intent(this, ConnectionService.class);
+        stopService(intent);
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.unsubscribe();
+    }
+
 }

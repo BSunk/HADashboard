@@ -32,7 +32,7 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
 
     @Override
     public void unsubscribe() {
-
+        mView.stopConnectionService();
     }
 
     @Override
