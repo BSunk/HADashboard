@@ -1,11 +1,6 @@
 package com.bsunk.hapanel.ui.main;
 
-import android.content.Intent;
-
 import com.bsunk.hapanel.data.DataManager;
-import com.bsunk.hapanel.data.local.SharedPrefHelper;
-import com.bsunk.hapanel.data.remote.WebSocketConnection;
-import com.bsunk.hapanel.services.ConnectionService;
 
 import javax.inject.Inject;
 
