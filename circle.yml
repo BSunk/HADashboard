@@ -7,7 +7,6 @@ dependencies:
     # Android Support Repository, revision 35 / Local Maven repository for Support Libraries
     - if [ ! -d "/usr/local/android-sdk-linux/extras/android/m2repository/com/android/support/design/25.2.0" ]; then echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"; fi
 
-
   cache_directories:
     - /usr/local/android-sdk-linux/platforms/android-25
     - /usr/local/android-sdk-linux/build-tools/25.0.2
