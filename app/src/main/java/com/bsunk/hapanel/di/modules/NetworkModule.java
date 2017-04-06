@@ -2,6 +2,7 @@ package com.bsunk.hapanel.di.modules;
 
 import com.bsunk.hapanel.data.local.DatabaseHelper;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
+import com.bsunk.hapanel.services.ConnectionService;
 
 import javax.inject.Singleton;
 
@@ -23,8 +24,12 @@ public class NetworkModule {
 
     @Singleton
     @Provides
-    WebSocketConnection providesWebSocketConnection(OkHttpClient client, DatabaseHelper databaseHelper) {
-        return new WebSocketConnection(client, databaseHelper);
+    ConnectionService providesConnectionService() { return new ConnectionService();}
+
+    @Singleton
+    @Provides
+    WebSocketConnection providesWebSocketConnection(OkHttpClient client, DatabaseHelper databaseHelper, ConnectionService service) {
+        return new WebSocketConnection(client, databaseHelper, service);
     }
 
 }

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.NotificationCompat;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;

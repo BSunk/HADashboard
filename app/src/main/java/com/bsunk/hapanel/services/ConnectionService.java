@@ -20,7 +20,7 @@ import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ConnectionService extends Service {
+public class ConnectionService extends Service implements WebSocketCallback {
 
     @Inject
     DataManager dataManager;
@@ -85,4 +85,21 @@ public class ConnectionService extends Service {
         dataManager.getWebSocketConnection().close();
     }
 
+    @Override
+    public void onConnectionFailure() {
+        Timber.v("Connection failed in Service class");
+        stopForeground(true);
+        stopSelf();
+    }
+
+    @Override
+    public void onConnectionClosed() {
+        stopForeground(true);
+        stopSelf();
+    }
+
+    @Override
+    public void onConnectionSuccess() {
+
+    }
 }

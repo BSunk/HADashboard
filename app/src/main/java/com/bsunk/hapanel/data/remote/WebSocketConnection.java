@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import com.bsunk.hapanel.data.local.DatabaseContract;
 import com.bsunk.hapanel.data.local.DatabaseHelper;
+import com.bsunk.hapanel.services.ConnectionService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +40,7 @@ public class WebSocketConnection extends WebSocketListener {
     private static final String TYPE_EVENT = "event";
 
     private final OkHttpClient mClient;
+    private ConnectionService service;
     private char[] pw;
     private int id_counter=1;
     private boolean stateResult = false;
@@ -47,10 +49,11 @@ public class WebSocketConnection extends WebSocketListener {
     private DatabaseHelper dataBaseHelper;
 
     @Inject
-    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper)
+    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper, ConnectionService service)
     {
         mClient = client;
         this.dataBaseHelper = dataBaseHelper;
+        this.service = service;
     }
 
     public void connect(String ip, String port, char[] pw) {
@@ -60,6 +63,7 @@ public class WebSocketConnection extends WebSocketListener {
                 .build();
 
         ws = mClient.newWebSocket(request, this);
+
         this.pw = pw;
     }
 
@@ -82,6 +86,7 @@ public class WebSocketConnection extends WebSocketListener {
                 switch(type) {
                     case TYPE_AUTH_OK:
                         Timber.v("Successfully connected!");
+                        service.onConnectionSuccess();
                         sendRequestDeviceStates();
                         sendSubscribeToEvents();
                         break;
@@ -110,11 +115,13 @@ public class WebSocketConnection extends WebSocketListener {
     @Override
     public void onClosed(WebSocket webSocket, int code, String reason) {
         Timber.v("Closed: " + code + " " + reason);
+        service.onConnectionClosed();
     }
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
         t.printStackTrace();
+        service.onConnectionFailure();
     }
 
     private void sendSecret() {
