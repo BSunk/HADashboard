@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
@@ -20,10 +21,6 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class ConnectionService extends Service {
-
-    private final int notificationID = 1;
-    private NotificationManager mNotificationManager;
-    private Notification n;
 
     @Inject
     DataManager dataManager;
@@ -45,26 +42,34 @@ public class ConnectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Timber.v("Service onStartCommand");
 
-        Completable.create(e -> {
-            String pw = "barru586";
-            char[] charArray = pw.toCharArray();
-            dataManager.getWebSocketConnection().connect("192.168.10.113", "8123", charArray);
-            e.onComplete();
-        }).subscribeOn(Schedulers.newThread())
-        .subscribe();
+        if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_home_black_24dp)
+                            .setContentTitle("Connected to HomeAssistant Server.");
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_home_black_24dp)
-                        .setContentTitle("Connected to HomeAssistant Server.");
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification n = mBuilder.build();
+            n.flags = Notification.FLAG_NO_CLEAR;
+            mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
 
+            Completable.create(e -> {
+                String pw = "barru586";
+                char[] charArray = pw.toCharArray();
+                dataManager.getWebSocketConnection().connect("192.168.10.113", "8123", charArray);
+                e.onComplete();
+            }).subscribeOn(Schedulers.newThread())
+                    .subscribe();
 
-        mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        n = mBuilder.build();
-        n.flags = Notification.FLAG_NO_CLEAR;
-        mNotificationManager.notify(notificationID, n);
+            startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
+        }
 
+        else if(intent.getAction().equals(Constants.ACTION.STOPFOREGROUND_ACTION)) {
+            Log.i("Service", "Received Stop Foreground Intent");
+            stopForeground(true);
+            stopSelf();
+        }
         return Service.START_STICKY;
     }
 
@@ -78,7 +83,6 @@ public class ConnectionService extends Service {
     public void onDestroy() {
         Timber.v("Service onDestroy");
         dataManager.getWebSocketConnection().close();
-        mNotificationManager.cancel(notificationID);
     }
 
 }
