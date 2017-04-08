@@ -5,4 +5,12 @@
     <string name="IP_textview">IP Address/Name</string>
     <string name="port_textview">Port</string>
     <string name="welcome_page_2_title">Enter your Home Assistant Server details</string>
+
+    <!--WebSocket Notification Strings-->
+    <string name="ws_connecting">Connecting…</string>
+    <string name="ws_connected">Connected to server</string>
+    <string name="ws_failed">Failed to connect</string>
+    <string name="ws_auth_failed">Authorization failed</string>
+    <string name="ws_closed">Disconnected from server</string>
+
 </resources>

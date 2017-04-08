@@ -85,7 +85,7 @@ public class ConnectionService extends Service {
             Notification n =
                     mNotificationBuilder
                             .setSmallIcon(R.drawable.ic_home_black_24dp)
-                            .setContentTitle("HomeAssistant")
+                            .setContentTitle(getString(R.string.app_name))
                             .build();
 
             mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
@@ -116,6 +116,7 @@ public class ConnectionService extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    //Close Web Socket connection and destroy rx disposable
     @Override
     public void onDestroy() {
         Timber.v("Service onDestroy");
@@ -128,27 +129,27 @@ public class ConnectionService extends Service {
         switch (eventCode) {
             case EVENT_CONNECTING:
                  n = mNotificationBuilder
-                                .setContentText("Connecting...")
-                                .build();
+                         .setContentText(getString(R.string.ws_connecting))
+                         .build();
                 break;
             case EVENT_CONNECTED:
                 n = mNotificationBuilder
-                        .setContentText("Connected")
+                        .setContentText(getString(R.string.ws_connected))
                         .build();
                 break;
             case EVENT_AUTH_FAILED:
                 n = mNotificationBuilder
-                        .setContentText("Authorization Failed")
+                        .setContentText(getString(R.string.ws_auth_failed))
                         .build();
                 break;
             case EVENT_FAILED:
                 n = mNotificationBuilder
-                        .setContentText("Failed to connect")
+                        .setContentText(getString(R.string.ws_failed))
                         .build();
                 break;
             case EVENT_CLOSED:
                 n = mNotificationBuilder
-                        .setContentText("Connection closed")
+                        .setContentText(getString(R.string.ws_closed))
                         .build();
                 break;
         }
