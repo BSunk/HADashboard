@@ -5,7 +5,10 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -17,13 +20,27 @@ import com.bsunk.hapanel.di.components.DaggerConnectionServiceComponent;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class ConnectionService extends Service implements WebSocketCallback {
+import static com.bsunk.hapanel.data.remote.WebSocketConnection.EVENT_AUTH_FAILED;
+import static com.bsunk.hapanel.data.remote.WebSocketConnection.EVENT_CLOSED;
+import static com.bsunk.hapanel.data.remote.WebSocketConnection.EVENT_CONNECTED;
+import static com.bsunk.hapanel.data.remote.WebSocketConnection.EVENT_CONNECTING;
+import static com.bsunk.hapanel.data.remote.WebSocketConnection.EVENT_FAILED;
+
+public class ConnectionService extends Service {
 
     @Inject
     DataManager dataManager;
+
+    NotificationManager mNotificationManager;
+    NotificationCompat.Builder mNotificationBuilder;
+
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     public ConnectionService() {
     }
@@ -36,6 +53,28 @@ public class ConnectionService extends Service implements WebSocketCallback {
                 .applicationComponent(((HAApplication)getApplication()).getApplicationComponent())
                 .build()
                 .inject(this);
+
+        mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationBuilder = new NotificationCompat.Builder(this);
+
+        //Gets events from publishsubject from WebSocketConnection class
+        disposables.add(dataManager.getWebSocketConnection().webSocketEventsBus.subscribeWith(new DisposableObserver<Integer>() {
+            @Override
+            public void onNext(Integer event) {
+                setNotificationText(event);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }));
     }
 
     @Override
@@ -43,15 +82,12 @@ public class ConnectionService extends Service implements WebSocketCallback {
         Timber.v("Service onStartCommand");
 
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
-            NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(this)
+            Notification n =
+                    mNotificationBuilder
                             .setSmallIcon(R.drawable.ic_home_black_24dp)
-                            .setContentTitle("Connected to HomeAssistant Server.");
+                            .setContentTitle("HomeAssistant")
+                            .build();
 
-            NotificationManager mNotificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            Notification n = mBuilder.build();
-            n.flags = Notification.FLAG_NO_CLEAR;
             mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
 
             Completable.create(e -> {
@@ -70,6 +106,7 @@ public class ConnectionService extends Service implements WebSocketCallback {
             stopForeground(true);
             stopSelf();
         }
+
         return Service.START_STICKY;
     }
 
@@ -83,23 +120,39 @@ public class ConnectionService extends Service implements WebSocketCallback {
     public void onDestroy() {
         Timber.v("Service onDestroy");
         dataManager.getWebSocketConnection().close();
+        disposables.clear();
     }
 
-    @Override
-    public void onConnectionFailure() {
-        Timber.v("Connection failed in Service class");
-        stopForeground(true);
-        stopSelf();
-    }
+    private void setNotificationText(int eventCode) {
+        Notification n = mNotificationBuilder.build();
+        switch (eventCode) {
+            case EVENT_CONNECTING:
+                 n = mNotificationBuilder
+                                .setContentText("Connecting...")
+                                .build();
+                break;
+            case EVENT_CONNECTED:
+                n = mNotificationBuilder
+                        .setContentText("Connected")
+                        .build();
+                break;
+            case EVENT_AUTH_FAILED:
+                n = mNotificationBuilder
+                        .setContentText("Authorization Failed")
+                        .build();
+                break;
+            case EVENT_FAILED:
+                n = mNotificationBuilder
+                        .setContentText("Failed to connect")
+                        .build();
+                break;
+            case EVENT_CLOSED:
+                n = mNotificationBuilder
+                        .setContentText("Connection closed")
+                        .build();
+                break;
+        }
 
-    @Override
-    public void onConnectionClosed() {
-        stopForeground(true);
-        stopSelf();
-    }
-
-    @Override
-    public void onConnectionSuccess() {
-
+        mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
     }
 }

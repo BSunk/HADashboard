@@ -5,6 +5,8 @@ import android.content.ContentValues;
 import com.bsunk.hapanel.data.local.DatabaseContract;
 import com.bsunk.hapanel.data.local.DatabaseHelper;
 import com.bsunk.hapanel.services.ConnectionService;
+import com.bsunk.hapanel.ui.main.MainActivity;
+import com.bsunk.hapanel.ui.main.MainActivityContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +20,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -31,6 +34,12 @@ import timber.log.Timber;
 
 public class WebSocketConnection extends WebSocketListener {
 
+    public final static int EVENT_CONNECTING = 0;
+    public final static int EVENT_CONNECTED = 1;
+    public final static int EVENT_AUTH_FAILED = 2;
+    public final static int EVENT_FAILED = 3;
+    public final static int EVENT_CLOSED = 4;
+
     private static final int NORMAL_CLOSURE_STATUS = 1000;
 
     private static final String TYPE_AUTH_OK = "auth_ok";
@@ -39,21 +48,22 @@ public class WebSocketConnection extends WebSocketListener {
     private static final String TYPE_RESULT = "result";
     private static final String TYPE_EVENT = "event";
 
+    public PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
+
     private final OkHttpClient mClient;
-    private ConnectionService service;
+    private DatabaseHelper dataBaseHelper;
+
     private char[] pw;
     private int id_counter=1;
     private boolean stateResult = false;
 
     private WebSocket ws;
-    private DatabaseHelper dataBaseHelper;
 
     @Inject
-    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper, ConnectionService service)
+    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper)
     {
         mClient = client;
         this.dataBaseHelper = dataBaseHelper;
-        this.service = service;
     }
 
     public void connect(String ip, String port, char[] pw) {
@@ -63,6 +73,8 @@ public class WebSocketConnection extends WebSocketListener {
                 .build();
 
         ws = mClient.newWebSocket(request, this);
+
+        webSocketEventsBus.onNext(EVENT_CONNECTING);
 
         this.pw = pw;
     }
@@ -85,8 +97,8 @@ public class WebSocketConnection extends WebSocketListener {
             if(type!=null) {
                 switch(type) {
                     case TYPE_AUTH_OK:
+                        webSocketEventsBus.onNext(EVENT_CONNECTED);
                         Timber.v("Successfully connected!");
-                        service.onConnectionSuccess();
                         sendRequestDeviceStates();
                         sendSubscribeToEvents();
                         break;
@@ -96,6 +108,7 @@ public class WebSocketConnection extends WebSocketListener {
                         break;
                     case TYPE_AUTH_INVALID:
                         Timber.v("Auth failed");
+                        webSocketEventsBus.onNext(EVENT_AUTH_FAILED);
                         break;
                     case TYPE_RESULT:
                         if(stateResult) {
@@ -115,13 +128,13 @@ public class WebSocketConnection extends WebSocketListener {
     @Override
     public void onClosed(WebSocket webSocket, int code, String reason) {
         Timber.v("Closed: " + code + " " + reason);
-        service.onConnectionClosed();
+        webSocketEventsBus.onNext(EVENT_CLOSED);
     }
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
         t.printStackTrace();
-        service.onConnectionFailure();
+        webSocketEventsBus.onNext(EVENT_FAILED);
     }
 
     private void sendSecret() {
