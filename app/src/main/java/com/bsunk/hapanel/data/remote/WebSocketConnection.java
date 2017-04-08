@@ -177,20 +177,17 @@ public class WebSocketConnection extends WebSocketListener {
 
     private void parseStateData(String data) {
         parseStateMessageObservable(data)
-                .flatMapIterable(contentValues -> contentValues)
-                .flatMap(contentValue -> dataBaseHelper.addOrUpdateDevice(contentValue))
+                .flatMap(contentValues -> dataBaseHelper.addOrUpdateDevice(contentValues))
                 .subscribeOn(Schedulers.io())
-                .subscribeWith(new Observer<Long>() {
+                .subscribeWith(new Observer<Void>() {
                     @Override
-                    public void onSubscribe(Disposable d) {dataBaseHelper.open();}
+                    public void onSubscribe(Disposable d) {}
                     @Override
-                    public void onNext(Long aLong) {}
+                    public void onNext(Void aVoid) {}
                     @Override
                     public void onError(Throwable e) {Timber.v(e);}
                     @Override
-                    public void onComplete() {
-                        dataBaseHelper.close();
-                    }
+                    public void onComplete() {}
                 });
     }
 
