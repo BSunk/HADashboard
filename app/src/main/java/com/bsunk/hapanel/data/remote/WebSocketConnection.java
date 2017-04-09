@@ -20,7 +20,10 @@ import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import okhttp3.OkHttpClient;
@@ -58,6 +61,8 @@ public class WebSocketConnection extends WebSocketListener {
     private int id_counter=1;
     private int configID;
     private int stateID;
+
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private WebSocket ws;
 
@@ -207,7 +212,7 @@ public class WebSocketConnection extends WebSocketListener {
     }
 
     private void parseConfigData(String data) {
-        Single.create((SingleOnSubscribe<Boolean>) e -> {
+        disposables.add(Single.create((SingleOnSubscribe<Boolean>) e -> {
             try {
                 JSONObject config = new JSONObject(data).getJSONObject("result");
                 sharedPrefHelper.putLocationName(config.getString("location_name"));
@@ -220,12 +225,7 @@ public class WebSocketConnection extends WebSocketListener {
                 d.printStackTrace();
                 e.onError(d);
             }
-        }).subscribeWith(new SingleObserver<Boolean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
+        }).subscribeWith(new DisposableSingleObserver<Boolean>() {
             @Override
             public void onSuccess(Boolean b) {
                 Timber.v("Successfully updated config data");
@@ -235,24 +235,21 @@ public class WebSocketConnection extends WebSocketListener {
             public void onError(Throwable e) {
                 Timber.v("Error updating config data");
             }
-        });
-
+        }));
     }
 
     private void parseStateData(String data) {
-        parseStateMessageObservable(data)
+        disposables.add(parseStateMessageObservable(data)
                 .flatMap(contentValues -> dataBaseHelper.addOrUpdateDevice(contentValues))
                 .subscribeOn(Schedulers.io())
-                .subscribeWith(new Observer<Void>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {}
+                .subscribeWith(new DisposableObserver<Void>() {
                     @Override
                     public void onNext(Void aVoid) {}
                     @Override
                     public void onError(Throwable e) {Timber.v(e);}
                     @Override
                     public void onComplete() {}
-                });
+                }));
     }
 
     private Observable<ArrayList<ContentValues>> parseStateMessageObservable(String data) {
@@ -275,5 +272,9 @@ public class WebSocketConnection extends WebSocketListener {
                 e.onError(j);
             }
         });
+    }
+
+    public void onDestroy() {
+        disposables.dispose();
     }
 }

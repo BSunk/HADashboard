@@ -112,6 +112,7 @@ public class ConnectionService extends Service {
     @Override
     public void onDestroy() {
         disposables.clear();
+        dataManager.getWebSocketConnection().onDestroy();
     }
 
     private void setNotificationText(int eventCode) {
