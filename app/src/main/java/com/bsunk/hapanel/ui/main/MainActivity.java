@@ -10,7 +10,7 @@ import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.di.components.DaggerMainActivityComponent;
 import com.bsunk.hapanel.di.modules.MainActivityPresenterModule;
 import com.bsunk.hapanel.services.ConnectionService;
-import com.bsunk.hapanel.services.Constants;
+import com.bsunk.hapanel.data.Constants;
 
 import javax.inject.Inject;
 

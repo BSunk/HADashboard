@@ -4,9 +4,6 @@ import android.content.ContentValues;
 
 import com.bsunk.hapanel.data.local.DatabaseContract;
 import com.bsunk.hapanel.data.local.DatabaseHelper;
-import com.bsunk.hapanel.services.ConnectionService;
-import com.bsunk.hapanel.ui.main.MainActivity;
-import com.bsunk.hapanel.ui.main.MainActivityContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,25 +25,23 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import timber.log.Timber;
 
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_AUTH_FAILED;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CLOSED;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTED;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTING;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_FAILED;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.NORMAL_CLOSURE_STATUS;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.TYPE_AUTH_INVALID;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.TYPE_AUTH_OK;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.TYPE_AUTH_REQUIRED;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.TYPE_EVENT;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.TYPE_RESULT;
+
 /**
  * Created by Bryan on 3/4/2017.
  */
 
 public class WebSocketConnection extends WebSocketListener {
-
-    public final static int EVENT_CONNECTING = 0;
-    public final static int EVENT_CONNECTED = 1;
-    public final static int EVENT_AUTH_FAILED = 2;
-    public final static int EVENT_FAILED = 3;
-    public final static int EVENT_CLOSED = 4;
-
-    private static final int NORMAL_CLOSURE_STATUS = 1000;
-
-    private static final String TYPE_AUTH_OK = "auth_ok";
-    private static final String TYPE_AUTH_REQUIRED = "auth_required";
-    private static final String TYPE_AUTH_INVALID = "auth_invalid";
-    private static final String TYPE_RESULT = "result";
-    private static final String TYPE_EVENT = "event";
 
     public PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
 
@@ -56,6 +51,7 @@ public class WebSocketConnection extends WebSocketListener {
     private char[] pw;
     private int id_counter=1;
     private boolean stateResult = false;
+    private boolean configResult = false;
 
     private WebSocket ws;
 
@@ -115,6 +111,10 @@ public class WebSocketConnection extends WebSocketListener {
                             parseStateData(text);
                             stateResult=false;
                         }
+                        if(configResult) {
+                            parseConfigData(text);
+                            configResult=false;
+                        }
                         break;
                     case TYPE_EVENT:
                         break;
@@ -173,6 +173,31 @@ public class WebSocketConnection extends WebSocketListener {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendRequestConfig() {
+        JSONObject subscribeObject = new JSONObject();
+        try {
+            subscribeObject.put("id", id_counter);
+            subscribeObject.put("type", "get_config");
+            ws.send(subscribeObject.toString());
+            id_counter++;
+            configResult=true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void parseConfigData(String data) {
+        Observable.create(e -> {
+            try {
+                JSONObject config = new JSONObject(data);
+
+            }
+            catch (JSONException d) {
+                d.printStackTrace();
+            }
+        });
     }
 
     private void parseStateData(String data) {

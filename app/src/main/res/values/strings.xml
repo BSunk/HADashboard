@@ -12,5 +12,8 @@
     <string name="ws_failed">Failed to connect</string>
     <string name="ws_auth_failed">Authorization failed</string>
     <string name="ws_closed">Disconnected from server</string>
+    <string name="text_groups">Groups</string>
+    <string name="text_home">Home</string>
+    <string name="text_settings">Settings</string>
 
 </resources>
