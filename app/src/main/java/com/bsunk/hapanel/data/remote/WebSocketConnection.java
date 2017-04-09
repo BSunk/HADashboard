@@ -66,6 +66,7 @@ public class WebSocketConnection extends WebSocketListener {
     }
 
     public void connect(String ip, String port, char[] pw) {
+        close();
 
         Request request = new Request.Builder()
                 .url("ws://"+ip+":"+port+"/api/websocket")

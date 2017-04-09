@@ -59,22 +59,20 @@ public class ConnectionService extends Service {
 
         //Gets events from PublishSubject from WebSocketConnection class
         disposables.add(dataManager.getWebSocketConnection().webSocketEventsBus
-                .subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableObserver<Integer>() {
-            @Override
-            public void onNext(Integer event) {
-                setNotificationText(event);
-            }
-            @Override
-            public void onError(Throwable e) {}
-            @Override
-            public void onComplete() {}
-        }));
+                    @Override
+                    public void onNext(Integer event) {
+                        setNotificationText(event);
+                    }
+                    @Override
+                    public void onError(Throwable e) {}
+                    @Override
+                    public void onComplete() {}
+                }));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Timber.v("Service onStartCommand");
 
         if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
             Notification n =
@@ -85,6 +83,7 @@ public class ConnectionService extends Service {
 
             mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
 
+            dataManager.getWebSocketConnection().close();
             connectToServer("192.168.10.113", "8123", "barru586");
 
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
@@ -92,11 +91,11 @@ public class ConnectionService extends Service {
 
         else if(intent.getAction().equals(Constants.ACTION.STOPFOREGROUND_ACTION)) {
             Log.i("Service", "Received Stop Foreground Intent");
+            dataManager.getWebSocketConnection().close();
             stopForeground(true);
-            stopSelf();
+            stopSelf(startId);
         }
         else if(intent.getAction().equals(RETRY_CONNECTION_ACTION)) {
-            dataManager.getWebSocketConnection().close();
             connectToServer("192.168.10.113", "8123", "barru586");
         }
 
@@ -109,11 +108,8 @@ public class ConnectionService extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    //Close Web Socket connection and destroy rx disposable
     @Override
     public void onDestroy() {
-        Timber.v("Service onDestroy");
-        dataManager.getWebSocketConnection().close();
         disposables.clear();
     }
 
@@ -156,13 +152,12 @@ public class ConnectionService extends Service {
         mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
     }
 
-    void connectToServer(String server, String port, String pw) {
+    private void connectToServer(String server, String port, String pw) {
         Completable.create(e -> {
             char[] charArray = pw.toCharArray();
             dataManager.getWebSocketConnection().connect(server, port, charArray);
             e.onComplete();
-        }).subscribeOn(Schedulers.io())
-                .subscribe();
+        }).subscribe();
     }
 
 }
