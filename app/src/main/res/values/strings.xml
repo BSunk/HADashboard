@@ -12,8 +12,13 @@
     <string name="ws_failed">Failed to connect</string>
     <string name="ws_auth_failed">Authorization failed</string>
     <string name="ws_closed">Disconnected from server</string>
+    <string name="ws_no_info">Set up server information</string>
+
+    <!--Bottom Navigation-->
     <string name="text_groups">Groups</string>
     <string name="text_home">Home</string>
     <string name="text_settings">Settings</string>
+    <string name="retry_notification_button">Retry</string>
+    <string name="reconnect_notification_button">Reconnect</string>
 
 </resources>

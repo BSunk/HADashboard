@@ -7,8 +7,8 @@ package com.bsunk.hapanel.data;
 public class Constants {
 
     public interface ACTION {
-        String STARTFOREGROUND_ACTION = "com.bsunk.hpanel.action.startforeground";
-        String STOPFOREGROUND_ACTION = "com.bsunk.hpanel.action.stopforeground";
+        String START_FOREGROUND_ACTION = "com.bsunk.hpanel.action.startforeground";
+        String STOP_FOREGROUND_ACTION = "com.bsunk.hpanel.action.stopforeground";
         String RETRY_CONNECTION_ACTION = "com.bsunk.hpanel.action.retry";
     }
 
@@ -36,6 +36,7 @@ public class Constants {
         int EVENT_AUTH_FAILED = 2;
         int EVENT_FAILED = 3;
         int EVENT_CLOSED = 4;
+        int EVENT_NO_SERVER = 5;
 
         int NORMAL_CLOSURE_STATUS = 1000;
 

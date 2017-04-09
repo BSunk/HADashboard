@@ -39,13 +39,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     public void startConnectionService() {
         Intent intent = new Intent(this, ConnectionService.class);
-        intent.setAction(Constants.ACTION.STARTFOREGROUND_ACTION);
+        intent.setAction(Constants.ACTION.START_FOREGROUND_ACTION);
         startService(intent);
     }
 
     public void stopConnectionService() {
         Intent intent = new Intent(this, ConnectionService.class);
-        intent.setAction(Constants.ACTION.STOPFOREGROUND_ACTION);
+        intent.setAction(Constants.ACTION.STOP_FOREGROUND_ACTION);
         startService(intent);
     }
 

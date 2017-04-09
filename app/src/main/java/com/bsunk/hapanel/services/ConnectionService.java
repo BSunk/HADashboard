@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.bsunk.hapanel.data.Constants.ACTION.RETRY_CONNECTION_ACTION;
@@ -30,6 +29,7 @@ import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CLOSED;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTED;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTING;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_FAILED;
+import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_NO_SERVER;
 
 public class ConnectionService extends Service {
 
@@ -74,10 +74,12 @@ public class ConnectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if(intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
+        if(intent.getAction().equals(Constants.ACTION.START_FOREGROUND_ACTION)) {
+
             Notification n =
                     mNotificationBuilder
                             .setSmallIcon(R.drawable.ic_home_black_24dp)
+                            .setContentText(getString(R.string.ws_connecting))
                             .setContentTitle(getString(R.string.app_name))
                             .build();
 
@@ -85,14 +87,13 @@ public class ConnectionService extends Service {
 
             dataManager.getWebSocketConnection().close();
             connectToServer("192.168.10.113", "8123", "barru586");
-
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
         }
 
-        else if(intent.getAction().equals(Constants.ACTION.STOPFOREGROUND_ACTION)) {
-            Log.i("Service", "Received Stop Foreground Intent");
-            dataManager.getWebSocketConnection().close();
+        else if(intent.getAction().equals(Constants.ACTION.STOP_FOREGROUND_ACTION)) {
+            Timber.v("Received Stop Foreground Intent");
             stopForeground(true);
+            dataManager.getWebSocketConnection().close();
             stopSelf(startId);
         }
         else if(intent.getAction().equals(RETRY_CONNECTION_ACTION)) {
@@ -115,8 +116,12 @@ public class ConnectionService extends Service {
 
     private void setNotificationText(int eventCode) {
         mNotificationBuilder.mActions.clear();
-
         Notification n = mNotificationBuilder.build();
+
+        Intent intent = new Intent(this, ConnectionService.class);
+        intent.setAction(RETRY_CONNECTION_ACTION);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 1, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
         switch (eventCode) {
             case EVENT_CONNECTING:
                  n = mNotificationBuilder
@@ -134,17 +139,20 @@ public class ConnectionService extends Service {
                         .build();
                 break;
             case EVENT_FAILED:
-                Intent intent = new Intent(this, ConnectionService.class);
-                intent.setAction(RETRY_CONNECTION_ACTION);
-                PendingIntent pendingIntent = PendingIntent.getService(this, 1, intent, PendingIntent.FLAG_CANCEL_CURRENT);
                 n = mNotificationBuilder
                         .setContentText(getString(R.string.ws_failed))
-                        .addAction(R.drawable.ic_refresh_black_24dp, "Retry", pendingIntent)
+                        .addAction(R.drawable.ic_refresh_black_24dp, getString(R.string.retry_notification_button), pendingIntent)
                         .build();
                 break;
             case EVENT_CLOSED:
                 n = mNotificationBuilder
                         .setContentText(getString(R.string.ws_closed))
+                        .addAction(R.drawable.ic_refresh_black_24dp, getString(R.string.reconnect_notification_button), pendingIntent)
+                        .build();
+                break;
+            case EVENT_NO_SERVER:
+                n = mNotificationBuilder
+                        .setContentText(getString(R.string.ws_no_info))
                         .build();
                 break;
         }

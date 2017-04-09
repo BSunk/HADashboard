@@ -16,6 +16,10 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
@@ -203,19 +207,36 @@ public class WebSocketConnection extends WebSocketListener {
     }
 
     private void parseConfigData(String data) {
-        Observable.create(e -> {
+        Single.create((SingleOnSubscribe<Boolean>) e -> {
             try {
-                JSONObject config = new JSONObject(data);
+                JSONObject config = new JSONObject(data).getJSONObject("result");
                 sharedPrefHelper.putLocationName(config.getString("location_name"));
                 sharedPrefHelper.putLat(config.getString("latitude"));
                 sharedPrefHelper.putLong(config.getString("longitude"));
                 sharedPrefHelper.putTimeZone(config.getString("time_zone"));
                 sharedPrefHelper.putVersion(config.getString("version"));
-            }
-            catch (JSONException d) {
+                e.onSuccess(true);
+            } catch (JSONException d) {
                 d.printStackTrace();
+                e.onError(d);
+            }
+        }).subscribeWith(new SingleObserver<Boolean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onSuccess(Boolean b) {
+                Timber.v("Successfully updated config data");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.v("Error updating config data");
             }
         });
+
     }
 
     private void parseStateData(String data) {
