@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import com.bsunk.hapanel.data.local.DatabaseContract;
 import com.bsunk.hapanel.data.local.DatabaseHelper;
+import com.bsunk.hapanel.data.local.SharedPrefHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,19 +48,21 @@ public class WebSocketConnection extends WebSocketListener {
 
     private final OkHttpClient mClient;
     private DatabaseHelper dataBaseHelper;
+    private SharedPrefHelper sharedPrefHelper;
 
     private char[] pw;
     private int id_counter=1;
-    private boolean stateResult = false;
-    private boolean configResult = false;
+    private int configID;
+    private int stateID;
 
     private WebSocket ws;
 
     @Inject
-    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper)
+    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper, SharedPrefHelper sharedPrefHelper)
     {
         mClient = client;
         this.dataBaseHelper = dataBaseHelper;
+        this.sharedPrefHelper = sharedPrefHelper;
     }
 
     public void connect(String ip, String port, char[] pw) {
@@ -96,6 +99,7 @@ public class WebSocketConnection extends WebSocketListener {
                         webSocketEventsBus.onNext(EVENT_CONNECTED);
                         Timber.v("Successfully connected!");
                         sendRequestDeviceStates();
+                        sendRequestConfig();
                         sendSubscribeToEvents();
                         break;
                     case TYPE_AUTH_REQUIRED:
@@ -107,14 +111,7 @@ public class WebSocketConnection extends WebSocketListener {
                         webSocketEventsBus.onNext(EVENT_AUTH_FAILED);
                         break;
                     case TYPE_RESULT:
-                        if(stateResult) {
-                            parseStateData(text);
-                            stateResult=false;
-                        }
-                        if(configResult) {
-                            parseConfigData(text);
-                            configResult=false;
-                        }
+                        parseResult(text);
                         break;
                     case TYPE_EVENT:
                         break;
@@ -168,8 +165,8 @@ public class WebSocketConnection extends WebSocketListener {
             subscribeObject.put("id", id_counter);
             subscribeObject.put("type", "get_states");
             ws.send(subscribeObject.toString());
+            stateID = id_counter;
             id_counter++;
-            stateResult=true;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -181,9 +178,25 @@ public class WebSocketConnection extends WebSocketListener {
             subscribeObject.put("id", id_counter);
             subscribeObject.put("type", "get_config");
             ws.send(subscribeObject.toString());
+            configID = id_counter;
             id_counter++;
-            configResult=true;
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void parseResult(String data) {
+        try {
+            JSONObject result = new JSONObject(data);
+            int id = result.getInt("id");
+            if(id == configID) {
+                parseConfigData(data);
+            }
+            else if(id == stateID) {
+                parseStateData(data);
+            }
+        }
+        catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -192,7 +205,11 @@ public class WebSocketConnection extends WebSocketListener {
         Observable.create(e -> {
             try {
                 JSONObject config = new JSONObject(data);
-
+                sharedPrefHelper.putLocationName(config.getString("location_name"));
+                sharedPrefHelper.putLat(config.getString("latitude"));
+                sharedPrefHelper.putLong(config.getString("longitude"));
+                sharedPrefHelper.putTimeZone(config.getString("time_zone"));
+                sharedPrefHelper.putVersion(config.getString("version"));
             }
             catch (JSONException d) {
                 d.printStackTrace();

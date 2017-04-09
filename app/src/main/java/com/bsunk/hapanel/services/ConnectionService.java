@@ -57,7 +57,7 @@ public class ConnectionService extends Service {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationBuilder = new NotificationCompat.Builder(this);
 
-        //Gets events from publishsubject from WebSocketConnection class
+        //Gets events from PublishSubject from WebSocketConnection class
         disposables.add(dataManager.getWebSocketConnection().webSocketEventsBus
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableObserver<Integer>() {
@@ -65,16 +65,10 @@ public class ConnectionService extends Service {
             public void onNext(Integer event) {
                 setNotificationText(event);
             }
-
             @Override
-            public void onError(Throwable e) {
-
-            }
-
+            public void onError(Throwable e) {}
             @Override
-            public void onComplete() {
-
-            }
+            public void onComplete() {}
         }));
     }
 

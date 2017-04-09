@@ -31,4 +31,8 @@ public class DataManager {
         return webSocketConnection;
     }
 
+    public DatabaseHelper getDataBaseHelper() {
+        return databaseHelper;
+    }
+
 }

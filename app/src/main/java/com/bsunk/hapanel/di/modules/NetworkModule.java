@@ -1,6 +1,7 @@
 package com.bsunk.hapanel.di.modules;
 
 import com.bsunk.hapanel.data.local.DatabaseHelper;
+import com.bsunk.hapanel.data.local.SharedPrefHelper;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
 import com.bsunk.hapanel.services.ConnectionService;
 import com.bsunk.hapanel.ui.main.MainActivity;
@@ -26,8 +27,8 @@ public class NetworkModule {
 
     @Singleton
     @Provides
-    WebSocketConnection providesWebSocketConnection(OkHttpClient client, DatabaseHelper databaseHelper) {
-        return new WebSocketConnection(client, databaseHelper);
+    WebSocketConnection providesWebSocketConnection(OkHttpClient client, DatabaseHelper databaseHelper, SharedPrefHelper sharedPrefHelper) {
+        return new WebSocketConnection(client, databaseHelper, sharedPrefHelper);
     }
 
 }
