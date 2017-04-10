@@ -1,46 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.bsunk.hapanel.ui.main.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.v7.widget.Toolbar
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@color/bottom_nav_background">
+        android:layout_height="match_parent"
+        tools:context="com.bsunk.hapanel.ui.main.MainActivity">
 
-        <RelativeLayout
+        <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="50dp">
 
-            <TextView
-                android:id="@+id/ha_name"
-                android:textSize="20sp"
-                android:layout_width="wrap_content"
-                android:text="@string/app_name"
-                android:fontFamily="sans-serif-light"
-                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="50dp"
+                android:layout_marginStart="50dp"
+                android:background="@color/bottom_nav_background">
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/ha_location_name"
+                    android:textSize="20sp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
-    </android.support.v7.widget.Toolbar>
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
 
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        app:itemBackground="@color/bottom_nav_background"
-        app:itemIconTint="@color/colorAccent"
-        app:itemTextColor="@android:color/white"
-        app:menu="@menu/bottom_navigation_main"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        />
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            app:itemBackground="@color/bottom_nav_background"
+            app:itemIconTint="@color/colorAccent"
+            app:itemTextColor="@android:color/white"
+            app:menu="@menu/bottom_navigation_main"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            />
 
-</RelativeLayout>
+    </RelativeLayout>
+</layout>

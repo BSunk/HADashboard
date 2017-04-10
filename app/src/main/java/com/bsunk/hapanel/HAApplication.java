@@ -30,10 +30,6 @@ public class HAApplication extends MultiDexApplication {
                 .builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
-
-        Intent intent = new Intent(this, ConnectionService.class);
-        intent.setAction(Constants.ACTION.START_FOREGROUND_ACTION);
-        startService(intent);
     }
 
     public ApplicationComponent getApplicationComponent() {

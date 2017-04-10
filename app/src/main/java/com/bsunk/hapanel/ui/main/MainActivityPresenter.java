@@ -11,27 +11,21 @@ import javax.inject.Inject;
 public class MainActivityPresenter implements MainActivityContract.Presenter {
 
     private final MainActivityContract.View mView;
-    private final DataManager dataManager;
+    private DataManager dataManager;
 
     @Inject
     public MainActivityPresenter(MainActivityContract.View view, DataManager dataManager) {
         mView = view;
         this.dataManager = dataManager;
-        connectToServer();
     }
 
-    @Override
     public void subscribe() {
-
+        mView.startConnectionService();
+        mView.setTitle(dataManager.getSharedPrefHelper().getLocationName());
     }
 
-    @Override
-    public void unsubscribe() {
+    public void unSubscribe() {
         mView.stopConnectionService();
     }
 
-    @Override
-    public void connectToServer() {
-        //mView.startConnectionService();
-    }
 }

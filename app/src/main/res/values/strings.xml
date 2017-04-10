@@ -21,4 +21,7 @@
     <string name="retry_notification_button">Retry</string>
     <string name="reconnect_notification_button">Reconnect</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

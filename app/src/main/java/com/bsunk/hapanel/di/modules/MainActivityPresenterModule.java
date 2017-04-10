@@ -30,7 +30,7 @@ public class MainActivityPresenterModule {
 
     @Singleton
     @Provides
-    MainActivityContract.Presenter providesMainActivityPresenter(DataManager dataManager, MainActivityContract.View view) {
+    MainActivityContract.Presenter providesMainActivityPresenter(MainActivityContract.View view, DataManager dataManager) {
         return new MainActivityPresenter(view, dataManager);
     }
 

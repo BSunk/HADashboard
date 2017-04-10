@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_FILE_NAME;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_FIRST_LAUNCH;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_IP;
@@ -56,6 +58,7 @@ public class SharedPrefHelper {
     public String getPW() {
         return mSharedPreferences.getString(PREF_KEY_PW, null);
     }
+
     public Boolean getWelcomeScreenLaunched() {
         return mSharedPreferences.getBoolean(PREF_KEY_FIRST_LAUNCH, false);
     }

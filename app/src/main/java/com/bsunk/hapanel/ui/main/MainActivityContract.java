@@ -11,14 +11,13 @@ public interface MainActivityContract {
 
     interface View extends BaseView<Presenter> {
 
-        void startConnectionService();
         void stopConnectionService();
+        void startConnectionService();
+        void setTitle(String name);
 
     }
 
     interface Presenter extends BasePresenter {
-
-        void connectToServer();
 
     }
 }
