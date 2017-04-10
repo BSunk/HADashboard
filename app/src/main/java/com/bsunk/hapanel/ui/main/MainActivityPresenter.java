@@ -32,6 +32,6 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
 
     @Override
     public void connectToServer() {
-        mView.startConnectionService();
+        //mView.startConnectionService();
     }
 }

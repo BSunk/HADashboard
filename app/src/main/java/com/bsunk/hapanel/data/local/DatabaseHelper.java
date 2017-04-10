@@ -47,12 +47,9 @@ public class DatabaseHelper {
         dbhandler.close();
     }
 
-    public Observable<Void> addOrUpdateDevice(ArrayList<ContentValues> values) {
-        open();
+    public Observable<Void> bulkAddOrUpdateDevice(ArrayList<ContentValues> values) {
         return Observable.create(e -> {
-
             for(int i=0; i<values.size(); i++) {
-
                 database.beginTransaction();
                 String selectQuery = "SELECT * FROM " + DatabaseContract.HAPanel.TABLE_NAME + " WHERE " + DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?";
                 Cursor cursor = database.rawQuery(selectQuery, new String[]{values.get(i).getAsString("entity_id")});
@@ -75,9 +72,35 @@ public class DatabaseHelper {
                         e.onError(new Throwable("Error updating database!"));
                     }
                 }
-
             }
-            close();
+            e.onComplete();
+        });
+    }
+
+    public Observable<Void> addOrUpdateDevice(ContentValues values) {
+        return Observable.create(e -> {
+            database.beginTransaction();
+                String selectQuery = "SELECT * FROM " + DatabaseContract.HAPanel.TABLE_NAME + " WHERE " + DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?";
+                Cursor cursor = database.rawQuery(selectQuery, new String[]{values.getAsString("entity_id")});
+                database.setTransactionSuccessful();
+                database.endTransaction();
+
+                if (cursor.getCount() <= 0) {
+                    long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
+                    if (id != -1) {
+                        Timber.v("Added device with id: " + id);
+                    } else {
+                        e.onError(new Throwable("Error inserting into database!"));
+                    }
+                } else {
+                    String entityID = values.getAsString("entity_id");
+                    long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
+                    if (id != -1) {
+                        Timber.v("Updated device with entity id: " + values.getAsString("entity_id"));
+                    } else {
+                        e.onError(new Throwable("Error updating database!"));
+                    }
+                }
             e.onComplete();
         });
     }
@@ -95,7 +118,7 @@ public class DatabaseHelper {
         });
     }
 
-    private Observable<Long> updateDevice(ContentValues values) {
+    public Observable<Long> updateDevice(ContentValues values) {
         String entityID = values.getAsString("entity_id");
         return Observable.create(e -> {
             long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
@@ -106,7 +129,6 @@ public class DatabaseHelper {
             else {
                 e.onError(new Throwable("Error updating database!"));
             }
-
         });
     }
 

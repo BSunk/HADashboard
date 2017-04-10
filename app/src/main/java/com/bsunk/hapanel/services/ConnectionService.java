@@ -47,11 +47,12 @@ public class ConnectionService extends Service {
     @Override
     public void onCreate() {
         Timber.v("Service onCreate");
-
         DaggerConnectionServiceComponent.builder()
                 .applicationComponent(((HAApplication)getApplication()).getApplicationComponent())
                 .build()
                 .inject(this);
+
+        dataManager.getDataBaseHelper().open();
 
         mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -113,6 +114,7 @@ public class ConnectionService extends Service {
     public void onDestroy() {
         disposables.clear();
         dataManager.getWebSocketConnection().onDestroy();
+        dataManager.getDataBaseHelper().close();
     }
 
     private void setNotificationText(int eventCode) {
