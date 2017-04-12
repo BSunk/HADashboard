@@ -50,7 +50,7 @@ import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.TYPE_RESULT;
 
 public class WebSocketConnection extends WebSocketListener {
 
-    public PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
+    private PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
 
     private final OkHttpClient mClient;
     private DatabaseHelper dataBaseHelper;
@@ -305,4 +305,9 @@ public class WebSocketConnection extends WebSocketListener {
     public void onDestroy() {
         disposables.dispose();
     }
+
+    public PublishSubject<Integer> getWebSocketEventsBus() {
+        return webSocketEventsBus;
+    }
+
 }

@@ -19,6 +19,8 @@ import android.provider.BaseColumns;
         public static final String COLUMN_LAST_CHANGED = "last_changed";
         public static final String COLUMN_POSITION = "position";
         public static final String COLUMN_HIDE_FLAG = "hide_flag";
+        public static final String COLUMN_NOTIFY_FLAG = "notify_flag";
+        public static final String COLUMN_ALERT_FLAG = "alert_flag";
 
     }
 }

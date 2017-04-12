@@ -13,7 +13,7 @@ import javax.inject.Inject;
 public class DbOpenHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ha_panel_app.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private final String SQL_CREATE_HA_PANEL_TABLE = "CREATE TABLE " + DatabaseContract.HAPanel.TABLE_NAME + " (" +
             DatabaseContract.HAPanel.COLUMN_ID + " INTEGER PRIMARY KEY," +
@@ -24,6 +24,8 @@ public class DbOpenHelper extends SQLiteOpenHelper {
             DatabaseContract.HAPanel.COLUMN_ATTRIBUTES + " TEXT," +
             DatabaseContract.HAPanel.COLUMN_HIDE_FLAG + " INTEGER," +
             DatabaseContract.HAPanel.COLUMN_POSITION + " INTEGER" +
+            DatabaseContract.HAPanel.COLUMN_NOTIFY_FLAG + " INTEGER" +
+            DatabaseContract.HAPanel.COLUMN_ALERT_FLAG + " INTEGER" +
             " );";
 
     @Inject

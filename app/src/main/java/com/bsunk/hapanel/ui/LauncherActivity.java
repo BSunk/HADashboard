@@ -7,8 +7,6 @@ import android.os.Bundle;
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.DataManager;
-import com.bsunk.hapanel.di.components.DaggerLauncherActivityComponent;
-import com.bsunk.hapanel.di.modules.StorageModule;
 import com.bsunk.hapanel.ui.main.MainActivity;
 
 import javax.inject.Inject;
@@ -24,12 +22,12 @@ public class LauncherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_launcher);
 
-        DaggerLauncherActivityComponent
+        /*DaggerLauncherActivityComponent
                 .builder()
                 .applicationComponent(((HAApplication)getApplication()).getApplicationComponent())
                 .storageModule(new StorageModule())
                 .build()
-                .inject(this);
+                .inject(this);*/
 
         initialize();
     }

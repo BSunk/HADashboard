@@ -8,29 +8,42 @@
         android:layout_height="match_parent"
         tools:context="com.bsunk.hapanel.ui.main.MainActivity">
 
-        <android.support.v7.widget.Toolbar
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:background="@color/bottom_nav_background"
+            android:weightSum="1">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/ha_location_name"
+                android:textSize="18sp"
+                android:layout_marginStart="15dp"
+                android:maxLines="1"
+                android:layout_gravity="center"
+                android:layout_weight=".90"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <FrameLayout
+                android:id="@+id/connection_background"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="50dp"
-                android:layout_marginStart="50dp"
-                android:background="@color/bottom_nav_background">
+                android:layout_weight=".10">
 
-                <TextView
-                    android:id="@+id/ha_location_name"
-                    android:textSize="20sp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="15dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                <ImageView
+                    android:id="@+id/connection_iv"
+                    android:layout_width="match_parent"
+                    android:tint="@android:color/white"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
 
-            </RelativeLayout>
+            </FrameLayout>
 
-        </android.support.v7.widget.Toolbar>
-
+        </LinearLayout>
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_navigation"

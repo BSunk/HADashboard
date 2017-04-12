@@ -62,6 +62,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.android.support:support-v4:25.3.1'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.10-rc2'
+    compile 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
+
 }
 
 configurations.compile.dependencies.each { compileDependency ->

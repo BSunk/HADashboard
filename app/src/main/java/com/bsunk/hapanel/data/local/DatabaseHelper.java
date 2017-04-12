@@ -29,7 +29,9 @@ public class DatabaseHelper {
             DatabaseContract.HAPanel.COLUMN_LAST_CHANGED,
             DatabaseContract.HAPanel.COLUMN_ATTRIBUTES,
             DatabaseContract.HAPanel.COLUMN_POSITION,
-            DatabaseContract.HAPanel.COLUMN_HIDE_FLAG
+            DatabaseContract.HAPanel.COLUMN_HIDE_FLAG,
+            DatabaseContract.HAPanel.COLUMN_NOTIFY_FLAG,
+            DatabaseContract.HAPanel.COLUMN_ALERT_FLAG
     };
 
     @Inject

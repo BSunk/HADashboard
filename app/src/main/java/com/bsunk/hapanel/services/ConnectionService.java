@@ -8,19 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.Constants;
 import com.bsunk.hapanel.data.DataManager;
-import com.bsunk.hapanel.di.components.DaggerConnectionServiceComponent;
 
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static com.bsunk.hapanel.data.Constants.ACTION.RETRY_CONNECTION_ACTION;
@@ -46,11 +45,8 @@ public class ConnectionService extends Service {
 
     @Override
     public void onCreate() {
-        Timber.v("Service onCreate");
-        DaggerConnectionServiceComponent.builder()
-                .applicationComponent(((HAApplication)getApplication()).getApplicationComponent())
-                .build()
-                .inject(this);
+
+        HAApplication.get(this).getApplicationComponent().inject(this);
 
         dataManager.getDataBaseHelper().open();
 
@@ -59,7 +55,8 @@ public class ConnectionService extends Service {
         mNotificationBuilder = new NotificationCompat.Builder(this);
 
         //Gets events from PublishSubject from WebSocketConnection class
-        disposables.add(dataManager.getWebSocketConnection().webSocketEventsBus
+        disposables.add(dataManager.getWebSocketConnection().getWebSocketEventsBus()
+                .subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableObserver<Integer>() {
                     @Override
                     public void onNext(Integer event) {

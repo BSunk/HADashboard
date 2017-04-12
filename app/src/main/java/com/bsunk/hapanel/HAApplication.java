@@ -1,16 +1,11 @@
 package com.bsunk.hapanel;
 
-import android.content.Intent;
+import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
-import com.bsunk.hapanel.data.Constants;
-import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.di.components.ApplicationComponent;
 import com.bsunk.hapanel.di.components.DaggerApplicationComponent;
 import com.bsunk.hapanel.di.modules.ApplicationModule;
-import com.bsunk.hapanel.services.ConnectionService;
-
-import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -34,6 +29,10 @@ public class HAApplication extends MultiDexApplication {
 
     public ApplicationComponent getApplicationComponent() {
         return applicationComponent;
+    }
+
+    public static HAApplication get(Context context) {
+        return (HAApplication) context.getApplicationContext();
     }
 
 }
