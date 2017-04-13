@@ -9,6 +9,7 @@ public class DeviceModel {
     private String state;
     private String last_changed;
     private String attributes;
+    private String type;
     private int position;
     private int hide;
 
@@ -19,13 +20,14 @@ public class DeviceModel {
         this.attributes = attributes;
     }
 
-    public DeviceModel(String entity_id, String state, String last_changed, String attributes, int position, int hide) {
+    public DeviceModel(String entity_id, String state, String last_changed, String attributes, String type, int position, int hide) {
         this.entity_id = entity_id;
         this.state = state;
         this.last_changed = last_changed;
         this.attributes = attributes;
         this.position = position;
         this.hide = hide;
+        this.type = type;
     }
 
     public String getEntity_id() {
@@ -76,6 +78,14 @@ public class DeviceModel {
         this.hide = hide;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "DeviceModel{" +
@@ -83,6 +93,7 @@ public class DeviceModel {
                 ", state='" + state + '\'' +
                 ", last_changed='" + last_changed + '\'' +
                 ", attributes='" + attributes + '\'' +
+                ", type='" + type + '\'' +
                 ", position=" + position +
                 ", hide=" + hide +
                 '}';

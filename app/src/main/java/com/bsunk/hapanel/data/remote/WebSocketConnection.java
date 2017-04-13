@@ -281,6 +281,7 @@ public class WebSocketConnection extends WebSocketListener {
                 values.put(DatabaseContract.HAPanel.COLUMN_STATE, event.getString("state"));
                 values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, event.getString("attributes"));
                 values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, event.getString("last_updated"));
+                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, event.getString("entity_id").split(".")[0]);
                 e.onNext(values);
 
             } catch (JSONException d) {

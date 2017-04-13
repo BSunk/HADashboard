@@ -47,4 +47,10 @@ public class Constants {
         String TYPE_EVENT = "event";
     }
 
+    public interface DEVICE_TYPE {
+        int SENSOR_TYPE = 1;
+        int LIGHT_TYPE = 2;
+        int MEDIA_PLAYER_TYPE = 3;
+    }
+
 }

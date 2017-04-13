@@ -5,4 +5,16 @@ package com.bsunk.hapanel.ui.home;
  */
 
 public interface HomeFragmentContract {
+
+    interface View {
+
+
+    }
+
+    interface Presenter {
+
+        void subscribe(HomeFragmentContract.View view);
+        void unSubscribe();
+
+    }
 }

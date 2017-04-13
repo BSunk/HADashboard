@@ -89,12 +89,13 @@ public class ConnectionService extends Service {
         }
 
         else if(intent.getAction().equals(Constants.ACTION.STOP_FOREGROUND_ACTION)) {
-            Timber.v("Received Stop Foreground Intent");
             stopForeground(true);
+            Timber.v("Received Stop Foreground Intent");
             dataManager.getWebSocketConnection().close();
             stopSelf(startId);
         }
         else if(intent.getAction().equals(RETRY_CONNECTION_ACTION)) {
+            dataManager.getWebSocketConnection().close();
             connectToServer("192.168.10.113", "8123", "barru586");
         }
 

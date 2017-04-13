@@ -10,4 +10,5 @@
     <color name="textColor">#ffffff</color>
     <color name="connection_box_background_disconnected">#afab3c3c</color>
     <color name="connection_box_background_connected">#af0c9150</color>
+    <color name="light_item_background">#e27655</color>
 </resources>
