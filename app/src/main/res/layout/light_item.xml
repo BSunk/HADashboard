@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable name="obj" type="com.bsunk.hapanel.data.model.DeviceModel"/>
+    </data>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -26,7 +29,7 @@
                 android:layout_marginBottom="5dp"
                 android:maxLength="16"
                 android:textSize="17sp"
-                android:text="Bedroom 2"/>
+                android:text="@{obj.entity_id}"/>
 
             <FrameLayout
                 android:id="@+id/brightness_frame_layout"

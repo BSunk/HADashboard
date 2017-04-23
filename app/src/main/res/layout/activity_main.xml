@@ -8,6 +8,11 @@
         android:layout_height="match_parent"
         tools:context="com.bsunk.hapanel.ui.main.MainActivity">
 
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -16,7 +21,8 @@
             android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:background="@color/bottom_nav_background"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:id="@+id/linearLayout">
 
             <TextView
                 android:id="@+id/ha_location_name"
@@ -45,11 +51,6 @@
 
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_navigation"
             android:layout_width="250dp"
@@ -63,4 +64,6 @@
             />
 
     </RelativeLayout>
+
+
 </layout>

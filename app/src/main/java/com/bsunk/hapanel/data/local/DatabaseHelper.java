@@ -14,6 +14,8 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
+import static com.bsunk.hapanel.data.local.DatabaseContract.HAPanel.TABLE_NAME;
+
 /**
  * Created by Bryan on 3/8/2017.
  */
@@ -28,6 +30,7 @@ public class DatabaseHelper {
             DatabaseContract.HAPanel.COLUMN_STATE,
             DatabaseContract.HAPanel.COLUMN_LAST_CHANGED,
             DatabaseContract.HAPanel.COLUMN_ATTRIBUTES,
+            DatabaseContract.HAPanel.COLUMN_TYPE,
             DatabaseContract.HAPanel.COLUMN_POSITION,
             DatabaseContract.HAPanel.COLUMN_HIDE_FLAG,
             DatabaseContract.HAPanel.COLUMN_NOTIFY_FLAG,
@@ -53,13 +56,13 @@ public class DatabaseHelper {
         return Observable.create(e -> {
             for(int i=0; i<values.size(); i++) {
                 database.beginTransaction();
-                String selectQuery = "SELECT * FROM " + DatabaseContract.HAPanel.TABLE_NAME + " WHERE " + DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?";
+                String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE " + DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?";
                 Cursor cursor = database.rawQuery(selectQuery, new String[]{values.get(i).getAsString("entity_id")});
                 database.setTransactionSuccessful();
                 database.endTransaction();
 
                 if (cursor.getCount() <= 0) {
-                    long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values.get(i));
+                    long id = database.insert(TABLE_NAME, null, values.get(i));
                     if (id != -1) {
                         Timber.v("Added device with id: " + id);
                     } else {
@@ -67,7 +70,7 @@ public class DatabaseHelper {
                     }
                 } else {
                     String entityID = values.get(i).getAsString("entity_id");
-                    long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values.get(i), DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
+                    long id = database.update(TABLE_NAME, values.get(i), DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
                     if (id != -1) {
                         Timber.v("Updated device with entity id: " + values.get(i).getAsString("entity_id"));
                     } else {
@@ -82,13 +85,13 @@ public class DatabaseHelper {
     public Observable<Void> addOrUpdateDevice(ContentValues values) {
         return Observable.create(e -> {
             database.beginTransaction();
-                String selectQuery = "SELECT * FROM " + DatabaseContract.HAPanel.TABLE_NAME + " WHERE " + DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?";
+                String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE " + DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?";
                 Cursor cursor = database.rawQuery(selectQuery, new String[]{values.getAsString("entity_id")});
                 database.setTransactionSuccessful();
                 database.endTransaction();
 
                 if (cursor.getCount() <= 0) {
-                    long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
+                    long id = database.insert(TABLE_NAME, null, values);
                     if (id != -1) {
                         Timber.v("Added device with id: " + id);
                     } else {
@@ -96,7 +99,7 @@ public class DatabaseHelper {
                     }
                 } else {
                     String entityID = values.getAsString("entity_id");
-                    long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
+                    long id = database.update(TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
                     if (id != -1) {
                         Timber.v("Updated device with entity id: " + values.getAsString("entity_id"));
                     } else {
@@ -109,7 +112,7 @@ public class DatabaseHelper {
 
     private Observable<Long> addDevice(ContentValues values) {
         return Observable.create(e -> {
-            long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
+            long id = database.insert(TABLE_NAME, null, values);
             if(id!=-1) {
                 e.onNext(id);
                 Timber.v("Added device with id: " + id);
@@ -123,7 +126,7 @@ public class DatabaseHelper {
     public Observable<Long> updateDevice(ContentValues values) {
         String entityID = values.getAsString("entity_id");
         return Observable.create(e -> {
-            long id = database.update(DatabaseContract.HAPanel.TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
+            long id = database.update(TABLE_NAME, values, DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?", new String[]{entityID});
             if(id!=-1) {
                 e.onNext(id);
                 Timber.v("Updated device with entity id: " + values.getAsString("entity_id"));
@@ -138,7 +141,7 @@ public class DatabaseHelper {
         return Observable.create(e -> {
             for(int i=0; i<list.size(); i++) {
                 ContentValues values = list.get(i);
-                long id = database.insert(DatabaseContract.HAPanel.TABLE_NAME, null, values);
+                long id = database.insert(TABLE_NAME, null, values);
                 Timber.v("Added device with id: " + id);
                 if(id==-1) {e.onError(new Throwable("Error inserting into database!"));}
             }
@@ -148,12 +151,13 @@ public class DatabaseHelper {
 
     public Observable<DeviceModel> getDevice(String entityID) {
         return Observable.create(e -> {
-            Cursor cursor = database.query(DatabaseContract.HAPanel.TABLE_NAME,
+            Cursor cursor = database.query(TABLE_NAME,
                     allColumns,
                     DatabaseContract.HAPanel.COLUMN_ENTITY_ID + "=?",new String[]{entityID},null,null, null, null);
             if (cursor != null) {
                 cursor.moveToFirst();
-                DeviceModel deviceModel = new DeviceModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4), cursor.getInt(5));
+                DeviceModel deviceModel = new DeviceModel(cursor.getString(0), cursor.getString(1),
+                        cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
                 Timber.v("Fetched device: " + deviceModel.toString());
                 e.onNext(deviceModel);
                 cursor.close();
@@ -162,6 +166,26 @@ public class DatabaseHelper {
                 e.onError(new Throwable("No device found with entityID: " + entityID));
             }
 
+        });
+    }
+
+    public Observable<ArrayList<DeviceModel>> getAllDevices() {
+        return Observable.create(e -> {
+            Cursor cursor = database.query(TABLE_NAME, allColumns, null, null, null, null, null);
+            ArrayList<DeviceModel> deviceModels = new ArrayList<>();
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                for (int i = 0; i < cursor.getCount(); i++) {
+                    deviceModels.add(new DeviceModel(cursor.getString(0), cursor.getString(1),
+                            cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6)));
+                    cursor.moveToNext();
+                }
+                cursor.close();
+                e.onNext(deviceModels);
+            }
+            else {
+                e.onError(new Throwable("No devices"));
+            }
         });
     }
 

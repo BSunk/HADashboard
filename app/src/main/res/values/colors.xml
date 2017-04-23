@@ -6,7 +6,7 @@
     <color name="page1">#566fff</color>
     <color name="page2">#7780b6</color>
     <color name="background">#3d2929</color>
-    <color name="bottom_nav_background">#a03b4d54</color>
+    <color name="bottom_nav_background">#d73b4d54</color>
     <color name="textColor">#ffffff</color>
     <color name="connection_box_background_disconnected">#afab3c3c</color>
     <color name="connection_box_background_connected">#af0c9150</color>

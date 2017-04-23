@@ -23,8 +23,8 @@ public class DbOpenHelper extends SQLiteOpenHelper {
             DatabaseContract.HAPanel.COLUMN_LAST_CHANGED + " TEXT," +
             DatabaseContract.HAPanel.COLUMN_ATTRIBUTES + " TEXT," +
             DatabaseContract.HAPanel.COLUMN_HIDE_FLAG + " INTEGER," +
-            DatabaseContract.HAPanel.COLUMN_POSITION + " INTEGER" +
-            DatabaseContract.HAPanel.COLUMN_NOTIFY_FLAG + " INTEGER" +
+            DatabaseContract.HAPanel.COLUMN_POSITION + " INTEGER," +
+            DatabaseContract.HAPanel.COLUMN_NOTIFY_FLAG + " INTEGER," +
             DatabaseContract.HAPanel.COLUMN_ALERT_FLAG + " INTEGER" +
             " );";
 

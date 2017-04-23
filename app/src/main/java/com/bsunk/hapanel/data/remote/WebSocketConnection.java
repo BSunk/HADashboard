@@ -253,6 +253,8 @@ public class WebSocketConnection extends WebSocketListener {
                     values.put(DatabaseContract.HAPanel.COLUMN_STATE, device.getString("state"));
                     values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, device.getString("attributes"));
                     values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, device.getString("last_updated"));
+                    String[] parts = device.getString("entity_id").split("\\.");
+                    values.put(DatabaseContract.HAPanel.COLUMN_TYPE, parts[0]);
                     devices.add(values);
                 }
                 e.onNext(devices);
@@ -281,7 +283,7 @@ public class WebSocketConnection extends WebSocketListener {
                 values.put(DatabaseContract.HAPanel.COLUMN_STATE, event.getString("state"));
                 values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, event.getString("attributes"));
                 values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, event.getString("last_updated"));
-                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, event.getString("entity_id").split(".")[0]);
+                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, (event.getString("entity_id").split("/."))[0]);
                 e.onNext(values);
 
             } catch (JSONException d) {

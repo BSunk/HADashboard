@@ -48,9 +48,9 @@ public class Constants {
     }
 
     public interface DEVICE_TYPE {
-        int SENSOR_TYPE = 1;
-        int LIGHT_TYPE = 2;
-        int MEDIA_PLAYER_TYPE = 3;
+        String SENSOR_TYPE = "sensor";
+        String LIGHT_TYPE = "light";
+        String MEDIA_PLAYER_TYPE = "media_player";
     }
 
 }
