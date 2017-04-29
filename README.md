@@ -11,3 +11,4 @@ Currently uses the WebSocket API connection to the HomeAssistant server.
 - OkHttp
 - WelcomeCoordinator
 - Timber
+- DataBinding
