@@ -20,7 +20,9 @@ public class DeviceModel {
         this.attributes = attributes;
     }
 
-    public DeviceModel(String entity_id, String state, String last_changed, String attributes, String type, int position, int hide) {
+    public DeviceModel(String entity_id, String state,
+                       String last_changed, String attributes,
+                       String type, int position, int hide) {
         this.entity_id = entity_id;
         this.state = state;
         this.last_changed = last_changed;

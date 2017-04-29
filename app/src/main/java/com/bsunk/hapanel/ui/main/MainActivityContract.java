@@ -18,6 +18,7 @@ public interface MainActivityContract {
 
         void subscribe(MainActivityContract.View view);
         void unSubscribe();
+        void setView(MainActivityContract.View view);
 
     }
 }

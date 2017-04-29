@@ -84,7 +84,7 @@ public class ConnectionService extends Service {
             mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
 
             dataManager.getWebSocketConnection().close();
-            connectToServer("192.168.10.113", "8123", "barru586");
+            connectToServer("192.168.10.113", "8123", "");
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
         }
 

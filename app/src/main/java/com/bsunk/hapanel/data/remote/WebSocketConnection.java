@@ -123,7 +123,7 @@ public class WebSocketConnection extends WebSocketListener {
                         parseResult(text);
                         break;
                     case TYPE_EVENT:
-                        parseEventData(text);
+                        saveEventData(text);
                         break;
                 }
             }
@@ -203,7 +203,7 @@ public class WebSocketConnection extends WebSocketListener {
                 parseConfigData(data);
             }
             else if(id == stateID) {
-                parseStateData(data);
+                saveStateData(data);
             }
         }
         catch (JSONException e) {
@@ -240,8 +240,22 @@ public class WebSocketConnection extends WebSocketListener {
                 }));
     }
 
-    private void parseStateData(String data) {
-        disposables.add(Observable.create((ObservableOnSubscribe<ArrayList<ContentValues>>) e -> {
+    private void saveStateData(String data) {
+        disposables.add(parseStateDataObservable(data)
+                .flatMap(contentValues -> dataBaseHelper.bulkAddOrUpdateDevice(contentValues))
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableObserver<Void>() {
+                    @Override
+                    public void onNext(Void aVoid) {}
+                    @Override
+                    public void onError(Throwable e) {Timber.v(e);}
+                    @Override
+                    public void onComplete() {}
+                }));
+    }
+
+    public Observable<ArrayList<ContentValues>> parseStateDataObservable(String data) {
+        return Observable.create(e -> {
             try {
                 ArrayList<ContentValues> devices = new ArrayList<>();
                 JSONObject statesResult = new JSONObject(data);
@@ -261,36 +275,11 @@ public class WebSocketConnection extends WebSocketListener {
             } catch (JSONException j) {
                 e.onError(j);
             }
-        })
-                .flatMap(contentValues -> dataBaseHelper.bulkAddOrUpdateDevice(contentValues))
-                .subscribeOn(Schedulers.io())
-                .subscribeWith(new DisposableObserver<Void>() {
-                    @Override
-                    public void onNext(Void aVoid) {}
-                    @Override
-                    public void onError(Throwable e) {Timber.v(e);}
-                    @Override
-                    public void onComplete() {}
-                }));
+        });
     }
 
-    private void parseEventData(String data) {
-        disposables.add(Observable.create((ObservableOnSubscribe<ContentValues>) e -> {
-            try {
-                JSONObject event = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
-                ContentValues values = new ContentValues();
-                values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, event.getString("entity_id"));
-                values.put(DatabaseContract.HAPanel.COLUMN_STATE, event.getString("state"));
-                values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, event.getString("attributes"));
-                values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, event.getString("last_updated"));
-                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, (event.getString("entity_id").split("/."))[0]);
-                e.onNext(values);
-
-            } catch (JSONException d) {
-                d.printStackTrace();
-                e.onError(d);
-            }
-        })
+    private void saveEventData(String data) {
+        disposables.add(parseEventDataObservable(data)
                 .flatMap(contentValues -> dataBaseHelper.addOrUpdateDevice(contentValues))
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableObserver<Void>() {
@@ -302,8 +291,27 @@ public class WebSocketConnection extends WebSocketListener {
                     public void onComplete() {
                     }
                 }));
-
     }
+
+    public Observable<ContentValues> parseEventDataObservable(String data) {
+        return Observable.create( e -> {
+            try {
+                JSONObject event = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
+                ContentValues values = new ContentValues();
+                values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, event.getString("entity_id"));
+                values.put(DatabaseContract.HAPanel.COLUMN_STATE, event.getString("state"));
+                values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, event.getString("attributes"));
+                values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, event.getString("last_updated"));
+                String[] parts = event.getString("entity_id").split("\\.");
+                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, parts[0]);
+                e.onNext(values);
+
+            } catch (JSONException d) {
+                e.onError(d);
+            }
+        });
+    }
+
 
     public void onDestroy() {
         disposables.dispose();

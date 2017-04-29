@@ -49,7 +49,6 @@ public class HomeFragmentPresenter implements HomeFragmentContract.Presenter {
                 .subscribeWith(new DisposableObserver<ArrayList<DeviceModel>>() {
             @Override
             public void onNext(ArrayList<DeviceModel> deviceModels) {
-                Timber.v(deviceModels.get(0).getEntity_id());
                 mView.initializeRecyclerView(deviceModels);
             }
 

@@ -1,16 +1,15 @@
 package com.bsunk.hapanel.ui.home;
 
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bsunk.hapanel.HAApplication;
-import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.model.DeviceModel;
 import com.bsunk.hapanel.databinding.FragmentHomeBinding;
 import com.bsunk.hapanel.di.components.ActivityComponent;
@@ -27,7 +26,7 @@ import javax.inject.Inject;
 public class HomeFragment extends Fragment implements HomeFragmentContract.View {
 
     private ActivityComponent mActivityComponent;
-    private FragmentHomeBinding binding;
+    private RecyclerView devicesRecyclerView;
 
     @Inject
     HomeFragmentPresenter presenter;
@@ -40,7 +39,8 @@ public class HomeFragment extends Fragment implements HomeFragmentContract.View 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        FragmentHomeBinding binding = FragmentHomeBinding.inflate(inflater, container, false);
+        devicesRecyclerView = binding.devicesRv;
 
         activityComponent().inject(this);
         presenter.subscribe(this);
@@ -61,8 +61,8 @@ public class HomeFragment extends Fragment implements HomeFragmentContract.View 
     @Override
     public void initializeRecyclerView(ArrayList<DeviceModel> deviceModels) {
         StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        binding.devicesRv.setLayoutManager(sglm);
-        binding.devicesRv.setAdapter(new DeviceAdapter(deviceModels));
+        devicesRecyclerView.setLayoutManager(sglm);
+        devicesRecyclerView.setAdapter(new DeviceAdapter(deviceModels));
     }
 
     @Override

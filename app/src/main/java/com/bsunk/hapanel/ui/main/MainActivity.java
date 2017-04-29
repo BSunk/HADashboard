@@ -27,6 +27,9 @@ import javax.inject.Inject;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTED;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_FAILED;
 
+//Main activity that contains the bottom navigation bar and the top
+// status bar indicating connection status.
+
 public class MainActivity extends AppCompatActivity implements MainActivityContract.View{
 
     private ActivityMainBinding binding;

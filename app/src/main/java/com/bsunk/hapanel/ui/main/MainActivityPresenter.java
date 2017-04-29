@@ -27,8 +27,8 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
     }
 
     public void subscribe(MainActivityContract.View view) {
-        mView = view;
-        subscribeToWebSocketEvents();
+        setView(view);
+        disposables.add(subscribeToWebSocketEvents());
         mView.startStopConnectionService(true);
         mView.setTitle(dataManager.getSharedPrefHelper().getLocationName());
     }
@@ -39,23 +39,29 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
         mView = null;
     }
 
+    public void setView(MainActivityContract.View view) {
+        mView = view;
+    }
+
     //Subscribes to websocket events and calls the view to change the connection image and color
-    private void subscribeToWebSocketEvents() {
-        disposables.add(dataManager.getWebSocketConnection().getWebSocketEventsBus()
+    private DisposableObserver<Integer> subscribeToWebSocketEvents() {
+        return dataManager.getWebSocketConnection().getWebSocketEventsBus()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<Integer>() {
-                    @Override
-                    public void onNext(Integer event) {
-                        mView.setConnectionImage(event);
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-                    @Override
-                    public void onComplete() {}
-                }));
+                .subscribeWith(webSocketEventsDisposableObserver());
+    }
+
+    public DisposableObserver<Integer> webSocketEventsDisposableObserver() {
+        return new DisposableObserver<Integer>() {
+            @Override
+            public void onNext(Integer integer) {
+                mView.setConnectionImage(integer);
+            }
+            @Override
+            public void onError(Throwable e) {e.printStackTrace();}
+            @Override
+            public void onComplete() {}
+        };
     }
 
 }
