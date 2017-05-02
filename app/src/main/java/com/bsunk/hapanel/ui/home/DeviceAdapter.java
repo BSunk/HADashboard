@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.model.DeviceModel;
-import com.bsunk.hapanel.ui.MyViewHolder;
 
 import java.util.ArrayList;
 

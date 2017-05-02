@@ -21,8 +21,7 @@ import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_FAILED;
 /**
  * Created by bryan on 4/27/17.
  */
-@Config(manifest= Config.NONE)
-@RunWith(RobolectricTestRunner.class)
+
 public class MainActivityPresenterTest extends BaseTest {
 
     @Mock

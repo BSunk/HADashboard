@@ -1,4 +1,4 @@
-package com.bsunk.hapanel.ui;
+package com.bsunk.hapanel.ui.home;
 
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;

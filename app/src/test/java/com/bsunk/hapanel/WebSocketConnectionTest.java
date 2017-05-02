@@ -57,12 +57,14 @@ public class WebSocketConnectionTest extends BaseTest{
     public void shouldPassWhenParseEventDataObservable() {
         TestObserver<ContentValues> testObserver = new TestObserver<>();
         webSocketConnection.parseEventDataObservable(TestData.testEventData).subscribe(testObserver);
+
         ContentValues values = new ContentValues();
         values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, "light.bed_light");
         values.put(DatabaseContract.HAPanel.COLUMN_STATE, "off");
         values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, "{\"friendly_name\":\"Bed Light\",\"supported_features\":151}");
         values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, "2017-04-29T02:10:57.875377+00:00");
         values.put(DatabaseContract.HAPanel.COLUMN_TYPE, "light");
+
         testObserver.onComplete();
         testObserver.assertResult(values);
         testObserver.assertNoErrors();

@@ -14,6 +14,8 @@ import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.Constants;
 import com.bsunk.hapanel.data.DataManager;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
@@ -39,6 +41,7 @@ public class ConnectionService extends Service {
     NotificationCompat.Builder mNotificationBuilder;
 
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private int retryCount = 0;
 
     public ConnectionService() {
     }
@@ -84,7 +87,7 @@ public class ConnectionService extends Service {
             mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
 
             dataManager.getWebSocketConnection().close();
-            connectToServer("192.168.10.113", "8123", "");
+            disposables.add(connectToServerCompletable("192.168.10.113", "8123", "").subscribe());
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
         }
 
@@ -96,7 +99,7 @@ public class ConnectionService extends Service {
         }
         else if(intent.getAction().equals(RETRY_CONNECTION_ACTION)) {
             dataManager.getWebSocketConnection().close();
-            connectToServer("192.168.10.113", "8123", "barru586");
+            disposables.add(connectToServerCompletable("192.168.10.113", "8123", "").subscribe());
         }
 
         return Service.START_STICKY;
@@ -144,6 +147,7 @@ public class ConnectionService extends Service {
                         .setContentText(getString(R.string.ws_failed))
                         .addAction(R.drawable.ic_refresh_black_24dp, getString(R.string.retry_notification_button), pendingIntent)
                         .build();
+                retryConnection("192.168.10.113", "8123", "");
                 break;
             case EVENT_CLOSED:
                 n = mNotificationBuilder
@@ -161,12 +165,21 @@ public class ConnectionService extends Service {
         mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
     }
 
-    private void connectToServer(String server, String port, String pw) {
-        Completable.create(e -> {
+    private Completable connectToServerCompletable(String server, String port, String pw) {
+        return Completable.create(e -> {
             char[] charArray = pw.toCharArray();
             dataManager.getWebSocketConnection().connect(server, port, charArray);
             e.onComplete();
-        }).subscribe();
+        }).subscribeOn(Schedulers.io());
+    }
+
+    private void retryConnection(String server, String port, String pw) {
+        if(retryCount<=5) {
+            disposables.add(connectToServerCompletable(server, port, pw)
+                    .delay(10 * retryCount, TimeUnit.SECONDS)
+                    .subscribe());
+            retryCount++;
+        }
     }
 
 }

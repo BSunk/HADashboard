@@ -45,11 +45,8 @@ dependencies {
     testCompile 'org.json:json:20140107'
     androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"
     androidTestCompile "com.android.support.test:rules:$rootProject.ext.rulesVersion"
-//    androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
-//    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
-//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 
-    testCompile('org.robolectric:robolectric:2.4') {
+    testCompile('org.robolectric:robolectric:3.3.2') {
         exclude group: 'commons-logging'
         exclude group: 'org.apache.httpcomponents'
     }
@@ -69,6 +66,9 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.10-rc2'
     compile 'com.github.Triggertrap:SeekArc:v1.1'
 
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
 }
 
 configurations.compile.dependencies.each { compileDependency ->
@@ -80,6 +80,6 @@ configurations.compile.dependencies.each { compileDependency ->
 
 configurations.all {
     resolutionStrategy.force 'com.android.support:support-annotations:23.1.1'
-    resolutionStrategy.force 'com.android.support:support-v4:23.1.1'
-    resolutionStrategy.force 'com.android.support:recyclerview-v7:23.1.1'
+    //resolutionStrategy.force 'com.android.support:support-v4:23.1.1'
+    //resolutionStrategy.force 'com.android.support:recyclerview-v7:23.1.1'
 }

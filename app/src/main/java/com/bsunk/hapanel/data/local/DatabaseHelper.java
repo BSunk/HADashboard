@@ -110,7 +110,7 @@ public class DatabaseHelper {
         });
     }
 
-    private Observable<Long> addDevice(ContentValues values) {
+    public Observable<Long> addDevice(ContentValues values) {
         return Observable.create(e -> {
             long id = database.insert(TABLE_NAME, null, values);
             if(id!=-1) {
@@ -120,6 +120,7 @@ public class DatabaseHelper {
             else {
                 e.onError(new Throwable("Error inserting into database!"));
             }
+            e.onComplete();
         });
     }
 
@@ -134,6 +135,7 @@ public class DatabaseHelper {
             else {
                 e.onError(new Throwable("Error updating database!"));
             }
+            e.onComplete();
         });
     }
 
