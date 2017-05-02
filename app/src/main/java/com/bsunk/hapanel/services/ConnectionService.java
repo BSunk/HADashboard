@@ -41,7 +41,8 @@ public class ConnectionService extends Service {
     NotificationCompat.Builder mNotificationBuilder;
 
     private final CompositeDisposable disposables = new CompositeDisposable();
-    private int retryCount = 0;
+    private int retryCount = 0; //Keeps track of retry count
+    private int MAX_RETRY = 5; //Max number of times to retry.
 
     public ConnectionService() {
     }
@@ -118,6 +119,7 @@ public class ConnectionService extends Service {
         dataManager.getDataBaseHelper().close();
     }
 
+    //Handles the websocket events and updates the notification depending on the event.
     private void setNotificationText(int eventCode) {
         mNotificationBuilder.mActions.clear();
         Notification n = mNotificationBuilder.build();
@@ -173,8 +175,10 @@ public class ConnectionService extends Service {
         }).subscribeOn(Schedulers.io());
     }
 
+
+    //Automatically reconnect to server with a delay timer depending on retry count.
     private void retryConnection(String server, String port, String pw) {
-        if(retryCount<=5) {
+        if(retryCount <= MAX_RETRY) {
             disposables.add(connectToServerCompletable(server, port, pw)
                     .delay(10 * retryCount, TimeUnit.SECONDS)
                     .subscribe());
