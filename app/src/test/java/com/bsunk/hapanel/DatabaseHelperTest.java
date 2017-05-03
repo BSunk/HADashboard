@@ -33,18 +33,18 @@ public class DatabaseHelperTest extends BaseTest {
         databaseHelper = new DatabaseHelper(dbOpenHelper);
     }
 
-    @Test
-    public void shouldAddDevice() {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, "light.bed_light");
-        values.put(DatabaseContract.HAPanel.COLUMN_STATE, "off");
-        values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, "{\"friendly_name\":\"Bed Light\",\"supported_features\":151}");
-        values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, "2017-04-29T02:10:57.875377+00:00");
-        values.put(DatabaseContract.HAPanel.COLUMN_TYPE, "light");
-
-        TestObserver<Long> testObserver = new TestObserver<>();
-        databaseHelper.addDevice(values).subscribeWith(testObserver);
-        //testObserver.assertNoErrors();
-    }
+//    @Test
+//    public void shouldAddDevice() {
+//        ContentValues values = new ContentValues();
+//        values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, "light.bed_light");
+//        values.put(DatabaseContract.HAPanel.COLUMN_STATE, "off");
+//        values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, "{\"friendly_name\":\"Bed Light\",\"supported_features\":151}");
+//        values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, "2017-04-29T02:10:57.875377+00:00");
+//        values.put(DatabaseContract.HAPanel.COLUMN_TYPE, "light");
+//
+//        TestObserver<Long> testObserver = new TestObserver<>();
+//        databaseHelper.addDevice(values).subscribeWith(testObserver);
+//        //testObserver.assertNoErrors();
+//    }
 
 }
