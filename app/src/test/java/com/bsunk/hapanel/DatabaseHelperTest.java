@@ -20,18 +20,18 @@ import static org.junit.Assert.*;
 /**
  * Created by bryan on 4/29/17.
  */
-@Config(constants = BuildConfig.class, sdk = 25)
-@RunWith(RobolectricTestRunner.class)
+//@Config(constants = BuildConfig.class, sdk = 25)
+//@RunWith(RobolectricTestRunner.class)
 public class DatabaseHelperTest extends BaseTest {
 
-    private DatabaseHelper databaseHelper;
-    DbOpenHelper dbOpenHelper;
-
-    @Before
-    public void setUp() {
-        dbOpenHelper = new DbOpenHelper(RuntimeEnvironment.application);
-        databaseHelper = new DatabaseHelper(dbOpenHelper);
-    }
+//    private DatabaseHelper databaseHelper;
+//    DbOpenHelper dbOpenHelper;
+//
+//    @Before
+//    public void setUp() {
+//        dbOpenHelper = new DbOpenHelper(RuntimeEnvironment.application);
+//        databaseHelper = new DatabaseHelper(dbOpenHelper);
+//    }
 
 //    @Test
 //    public void shouldAddDevice() {
@@ -46,5 +46,8 @@ public class DatabaseHelperTest extends BaseTest {
 //        databaseHelper.addDevice(values).subscribeWith(testObserver);
 //        //testObserver.assertNoErrors();
 //    }
+
+
+
 
 }
