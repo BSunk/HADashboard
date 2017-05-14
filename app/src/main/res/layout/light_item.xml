@@ -45,6 +45,7 @@
                     android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:padding="25dp"
+                    app:setBrightness="@{obj.attributes}"
                     app:progress="70"
                     app:arcWidth="5dp"
                     app:max="100"

@@ -1,5 +1,6 @@
-package com.bsunk.hapanel.ui.home;
+package com.bsunk.hapanel.ui.adapter;
 
+import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
@@ -8,8 +9,11 @@ import android.view.ViewGroup;
 
 import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.model.DeviceModel;
+import com.triggertrap.seekarc.SeekArc;
 
 import java.util.ArrayList;
+
+import timber.log.Timber;
 
 import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
 
@@ -21,26 +25,19 @@ public class DeviceAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     private ArrayList<DeviceModel> devices;
 
-    DeviceAdapter(ArrayList<DeviceModel> devices) {
+    public DeviceAdapter(ArrayList<DeviceModel> devices) {
         this.devices = devices;
     }
 
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater =
-                LayoutInflater.from(parent.getContext());
-        ViewDataBinding binding = DataBindingUtil.inflate(
-                layoutInflater, viewType, parent, false);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewType, parent, false);
         return new MyViewHolder(binding);
     }
 
     public void onBindViewHolder(MyViewHolder holder,
                                  int position) {
-        Object obj = getObjForPosition(position);
-        holder.bind(obj);
-    }
-
-    private Object getObjForPosition(int position) {
-        return devices.get(position);
+        holder.bind(devices.get(position));
     }
 
     @Override
@@ -57,6 +54,5 @@ public class DeviceAdapter extends RecyclerView.Adapter<MyViewHolder> {
     public int getItemCount() {
         return devices.size();
     }
-
 
 }

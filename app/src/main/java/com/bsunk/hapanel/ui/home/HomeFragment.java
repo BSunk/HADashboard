@@ -15,6 +15,7 @@ import com.bsunk.hapanel.databinding.FragmentHomeBinding;
 import com.bsunk.hapanel.di.components.ActivityComponent;
 import com.bsunk.hapanel.di.components.DaggerActivityComponent;
 import com.bsunk.hapanel.di.modules.ActivityModule;
+import com.bsunk.hapanel.ui.adapter.DeviceAdapter;
 
 import java.util.ArrayList;
 
@@ -44,7 +45,7 @@ public class HomeFragment extends Fragment implements HomeFragmentContract.View 
 
         activityComponent().inject(this);
         presenter.subscribe(this);
-
+        presenter.initDeviceList();
         return binding.getRoot();
     }
 

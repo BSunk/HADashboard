@@ -20,6 +20,7 @@ public interface HomeFragmentContract {
 
         void subscribe(HomeFragmentContract.View view);
         void unSubscribe();
+        void initDeviceList();
 
     }
 }
