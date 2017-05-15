@@ -13,11 +13,8 @@ public class DeviceModel {
     private int position;
     private int hide;
 
-    public DeviceModel(String entity_id, String state, String last_changed, String attributes) {
-        this.entity_id = entity_id;
-        this.state = state;
-        this.last_changed = last_changed;
-        this.attributes = attributes;
+    public DeviceModel() {
+
     }
 
     public DeviceModel(String entity_id, String state,

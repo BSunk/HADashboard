@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.bsunk.hapanel.data.model.DeviceModel;
+import com.bsunk.hapanel.data.model.LightModel;
 
 import java.util.ArrayList;
 
@@ -178,7 +179,7 @@ public class DatabaseHelper {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 for (int i = 0; i < cursor.getCount(); i++) {
-                    deviceModels.add(new DeviceModel(cursor.getString(0), cursor.getString(1),
+                    deviceModels.add(new LightModel(cursor.getString(0), cursor.getString(1),
                             cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6)));
                     cursor.moveToNext();
                 }

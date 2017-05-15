@@ -42,7 +42,7 @@ public class ConnectionService extends Service {
 
     private final CompositeDisposable disposables = new CompositeDisposable();
     private int retryCount = 0; //Keeps track of retry count
-    private int MAX_RETRY = 5; //Max number of times to retry.
+    private final int MAX_RETRY = 5; //Max number of times to retry.
 
     public ConnectionService() {
     }

@@ -20,8 +20,6 @@ import com.bsunk.hapanel.data.Constants;
 import com.bsunk.hapanel.ui.home.HomeFragment;
 
 
-import java.util.HashMap;
-
 import javax.inject.Inject;
 
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTED;
