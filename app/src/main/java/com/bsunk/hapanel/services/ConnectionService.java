@@ -13,6 +13,7 @@ import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.Constants;
 import com.bsunk.hapanel.data.DataManager;
+import com.bsunk.hapanel.data.remote.WebSocketConnection;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +36,7 @@ import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_NO_SERVER
 public class ConnectionService extends Service {
 
     @Inject
-    DataManager dataManager;
+    WebSocketConnection webSocketConnection;
 
     NotificationManager mNotificationManager;
     NotificationCompat.Builder mNotificationBuilder;
@@ -57,7 +58,7 @@ public class ConnectionService extends Service {
         mNotificationBuilder = new NotificationCompat.Builder(this);
 
         //Gets events from PublishSubject from WebSocketConnection class
-        disposables.add(dataManager.getWebSocketConnection().getWebSocketEventsBus()
+        disposables.add(webSocketConnection.getWebSocketEventsBus()
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(new DisposableObserver<Integer>() {
                     @Override
@@ -85,7 +86,7 @@ public class ConnectionService extends Service {
 
             mNotificationManager.notify(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
 
-            dataManager.getWebSocketConnection().close();
+            webSocketConnection.close();
             disposables.add(connectToServerCompletable("192.168.10.113", "8123", "").subscribe());
             startForeground(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE, n);
         }
@@ -93,11 +94,11 @@ public class ConnectionService extends Service {
         else if(intent.getAction().equals(Constants.ACTION.STOP_FOREGROUND_ACTION)) {
             stopForeground(true);
             Timber.v("Received Stop Foreground Intent");
-            dataManager.getWebSocketConnection().close();
+            webSocketConnection.close();
             stopSelf(startId);
         }
         else if(intent.getAction().equals(RETRY_CONNECTION_ACTION)) {
-            dataManager.getWebSocketConnection().close();
+            webSocketConnection.close();
             disposables.add(connectToServerCompletable("192.168.10.113", "8123", "").subscribe());
         }
 
@@ -113,7 +114,7 @@ public class ConnectionService extends Service {
     @Override
     public void onDestroy() {
         disposables.clear();
-        dataManager.getWebSocketConnection().onDestroy();
+        webSocketConnection.onDestroy();
     }
 
     //Handles the websocket events and updates the notification depending on the event.
@@ -167,7 +168,7 @@ public class ConnectionService extends Service {
     private Completable connectToServerCompletable(String server, String port, String pw) {
         return Completable.create(e -> {
             char[] charArray = pw.toCharArray();
-            dataManager.getWebSocketConnection().connect(server, port, charArray);
+            webSocketConnection.connect(server, port, charArray);
             e.onComplete();
         }).subscribeOn(Schedulers.io());
     }

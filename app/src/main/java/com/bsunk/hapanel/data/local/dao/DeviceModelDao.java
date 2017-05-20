@@ -3,10 +3,11 @@ package com.bsunk.hapanel.data.local.dao;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.bsunk.hapanel.data.model.DeviceModel;
+import com.bsunk.hapanel.data.local.entity.DeviceModel;
 
 /**
  * Created by bryan on 5/18/17.
@@ -14,14 +15,14 @@ import com.bsunk.hapanel.data.model.DeviceModel;
 @Dao
 public interface DeviceModelDao {
 
-    @Insert
-    public void insertDevice(DeviceModel... deviceModels);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    public long insertDevice(DeviceModel deviceModel);
 
     @Update
-    public void updateDevice(DeviceModel... deviceModels);
+    public int updateDevice(DeviceModel deviceModel);
 
     @Delete
-    public void deleteDevice(DeviceModel... deviceModels);
+    public int deleteDevice(DeviceModel deviceModels);
 
     @Query("SELECT * FROM devicemodel")
     public DeviceModel[] loadAllDevices();

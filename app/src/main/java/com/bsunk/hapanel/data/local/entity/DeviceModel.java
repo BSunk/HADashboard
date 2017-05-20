@@ -1,4 +1,4 @@
-package com.bsunk.hapanel.data.model;
+package com.bsunk.hapanel.data.local.entity;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
@@ -16,9 +16,7 @@ public class DeviceModel  {
     private int position;
     private int hide;
 
-    public DeviceModel() {
-
-    }
+    public DeviceModel() {}
 
     public DeviceModel(String entity_id, String state,
                        String last_changed, String attributes) {

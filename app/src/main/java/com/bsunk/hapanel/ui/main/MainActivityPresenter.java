@@ -1,6 +1,7 @@
 package com.bsunk.hapanel.ui.main;
 
 import com.bsunk.hapanel.data.DataManager;
+import com.bsunk.hapanel.data.remote.WebSocketConnection;
 
 import javax.inject.Inject;
 
@@ -16,13 +17,15 @@ import timber.log.Timber;
 
 public class MainActivityPresenter implements MainActivityContract.Presenter {
 
+    private final WebSocketConnection webSocketConnection;
     private MainActivityContract.View mView;
     private DataManager dataManager;
 
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     @Inject
-    public MainActivityPresenter(DataManager dataManager) {
+    public MainActivityPresenter(DataManager dataManager, WebSocketConnection webSocketConnection) {
+        this.webSocketConnection = webSocketConnection;
         this.dataManager = dataManager;
     }
 
@@ -45,7 +48,7 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
 
     //Subscribes to websocket events and calls the view to change the connection image and color
     private DisposableObserver<Integer> subscribeToWebSocketEvents() {
-        return dataManager.getWebSocketConnection().getWebSocketEventsBus()
+        return webSocketConnection.getWebSocketEventsBus()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(webSocketEventsDisposableObserver());

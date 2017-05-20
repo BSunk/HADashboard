@@ -1,6 +1,6 @@
 package com.bsunk.hapanel.ui.home;
 
-import com.bsunk.hapanel.data.model.DeviceModel;
+import com.bsunk.hapanel.data.local.entity.DeviceModel;
 
 import java.util.ArrayList;
 

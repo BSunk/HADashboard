@@ -17,6 +17,8 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 
+import static com.bsunk.hapanel.data.local.ModelDatabase.DATABASE_NAME;
+
 /**
  * Created by Bryan on 3/5/2017.
  */
@@ -48,15 +50,15 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    WebSocketConnection providesWebSocketConnection(OkHttpClient client, SharedPrefHelper sharedPrefHelper) {
-        return new WebSocketConnection(client, sharedPrefHelper);
+    WebSocketConnection providesWebSocketConnection(OkHttpClient client, DataManager dataManager) {
+        return new WebSocketConnection(client, dataManager);
     }
 
     @Singleton
     @Provides
     DataManager providesDataManager(SharedPrefHelper sharedPrefHelper,
-                                    WebSocketConnection webSocketConnection) {
-        return new DataManager(sharedPrefHelper, webSocketConnection);
+                                    DeviceRepository deviceRepository) {
+        return new DataManager(sharedPrefHelper, deviceRepository);
     }
 
     @Singleton
@@ -67,8 +69,8 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    ModelDatabase providesModelDatabase(Context context) {
-        return Room.databaseBuilder(context.getApplicationContext(), ModelDatabase.class, "ha_db").build();
+    ModelDatabase providesModelDatabase() {
+        return Room.databaseBuilder(mApplication.getApplicationContext(), ModelDatabase.class, DATABASE_NAME).build();
     }
 
     @Provides

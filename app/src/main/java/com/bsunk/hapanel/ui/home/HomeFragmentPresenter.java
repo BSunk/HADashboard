@@ -1,17 +1,10 @@
 package com.bsunk.hapanel.ui.home;
 
 import com.bsunk.hapanel.data.DataManager;
-import com.bsunk.hapanel.data.model.DeviceModel;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by bryan on 4/10/17.

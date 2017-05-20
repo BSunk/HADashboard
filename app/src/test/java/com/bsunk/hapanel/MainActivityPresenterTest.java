@@ -1,6 +1,7 @@
 package com.bsunk.hapanel;
 
 import com.bsunk.hapanel.data.DataManager;
+import com.bsunk.hapanel.data.remote.WebSocketConnection;
 import com.bsunk.hapanel.ui.main.MainActivityContract;
 import com.bsunk.hapanel.ui.main.MainActivityPresenter;
 
@@ -28,13 +29,15 @@ public class MainActivityPresenterTest extends BaseTest {
     private MainActivityContract.View mView;
     @Mock
     private DataManager dataManager;
+    @Mock
+    private WebSocketConnection webSocketConnection;
 
     private MainActivityPresenter presenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        presenter = new MainActivityPresenter(dataManager);
+        presenter = new MainActivityPresenter(dataManager, webSocketConnection);
         presenter.setView(mView);
     }
 

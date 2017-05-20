@@ -1,6 +1,5 @@
 package com.bsunk.hapanel.ui.adapter;
 
-import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
@@ -8,14 +7,9 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bsunk.hapanel.R;
-import com.bsunk.hapanel.data.model.DeviceModel;
-import com.triggertrap.seekarc.SeekArc;
+import com.bsunk.hapanel.data.local.entity.DeviceModel;
 
 import java.util.ArrayList;
-
-import timber.log.Timber;
-
-import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
 
 /**
  * Created by bryan on 4/13/17.

@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bsunk.hapanel.HAApplication;
-import com.bsunk.hapanel.data.model.DeviceModel;
+import com.bsunk.hapanel.data.local.entity.DeviceModel;
 import com.bsunk.hapanel.databinding.FragmentHomeBinding;
 import com.bsunk.hapanel.di.components.ActivityComponent;
 import com.bsunk.hapanel.di.components.DaggerActivityComponent;

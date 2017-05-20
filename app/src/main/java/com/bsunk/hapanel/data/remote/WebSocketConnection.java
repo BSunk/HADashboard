@@ -1,10 +1,9 @@
 package com.bsunk.hapanel.data.remote;
 
-import android.content.ContentValues;
-
+import com.bsunk.hapanel.data.DataManager;
+import com.bsunk.hapanel.data.local.DeviceRepository;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
-import com.bsunk.hapanel.data.model.DeviceModel;
-import com.bsunk.hapanel.data.model.LightModel;
+import com.bsunk.hapanel.data.local.entity.DeviceModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,10 +46,11 @@ import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.TYPE_RESULT;
 
 public class WebSocketConnection extends WebSocketListener {
 
+    private final SharedPrefHelper sharedPrefHelper;
+    private final DeviceRepository deviceRepository;
     private PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
 
     private final OkHttpClient mClient;
-    private SharedPrefHelper sharedPrefHelper;
 
     private char[] pw;
     private int id_counter=1;
@@ -62,10 +62,11 @@ public class WebSocketConnection extends WebSocketListener {
     private WebSocket ws;
 
     @Inject
-    public WebSocketConnection(OkHttpClient client, SharedPrefHelper sharedPrefHelper)
+    public WebSocketConnection(OkHttpClient client, DataManager dataManager)
     {
         mClient = client;
-        this.sharedPrefHelper = sharedPrefHelper;
+        sharedPrefHelper = dataManager.getSharedPrefHelper();
+        deviceRepository = dataManager.getDeviceRepository();
     }
 
     public void connect(String ip, String port, char[] pw) {
@@ -118,7 +119,7 @@ public class WebSocketConnection extends WebSocketListener {
                         parseResult(text);
                         break;
                     case TYPE_EVENT:
-                        //saveEventData(text);
+                        saveEventData(text);
                         break;
                 }
             }
@@ -198,7 +199,7 @@ public class WebSocketConnection extends WebSocketListener {
                 parseConfigData(data);
             }
             else if(id == stateID) {
-              //  saveStateData(data);
+                saveStateData(data);
             }
         }
         catch (JSONException e) {
@@ -235,79 +236,88 @@ public class WebSocketConnection extends WebSocketListener {
                 }));
     }
 
-//    private void saveStateData(String data) {
-//        disposables.add(parseStateDataObservable(data)
-//                .flatMapIterable(deviceModels -> deviceModels)
-//                .flatMap(deviceModel -> realmRepository.saveOrUpdateLightDevice((LightModel) deviceModel))
-//                .subscribeOn(Schedulers.io())
-//                .subscribeWith(new DisposableObserver<Void>() {
-//                    @Override
-//                    public void onNext(Void aVoid) {}
-//                    @Override
-//                    public void onError(Throwable e) {Timber.v(e);}
-//                    @Override
-//                    public void onComplete() {}
-//                }));
-//    }
-//
-//    public Observable<ArrayList<DeviceModel>> parseStateDataObservable(String data) {
-//        return Observable.create(e -> {
-//            try {
-//                ArrayList<DeviceModel> devices = new ArrayList<>();
-//                JSONObject statesResult = new JSONObject(data);
-//                JSONArray result = statesResult.getJSONArray("result");
-//                for (int i = 0; i < result.length(); i++) {
-//                    JSONObject device = result.getJSONObject(i);
-//                    String[] parts = device.getString("entity_id").split("\\.");
-//                    if(parts[0].equals("light")) {
-//                        LightModel lightModel = new LightModel(device.getString("entity_id"),
-//                                device.getString("state"),
-//                                device.getString("last_changed"),
-//                                device.getString("attributes"));
-//                        devices.add(lightModel);
-//                    }
-//
-//                }
-//                e.onNext(devices);
-//            } catch (JSONException j) {
-//                e.onError(j);
-//            }
-//        });
-//    }
+    private void saveStateData(String data) {
+       disposables.add(parseStateDataObservable(data)
+               .subscribeOn(Schedulers.io())
+               .subscribeWith(new DisposableObserver<Void>() {
+                   @Override
+                   public void onNext(Void aVoid) {}
 
-//    private void saveEventData(String data) {
-//        disposables.add(parseEventDataObservable(data)
-//                .flatMap(contentValues -> dataBaseHelper.addOrUpdateDevice(contentValues))
-//                .subscribeOn(Schedulers.io())
-//                .subscribeWith(new DisposableObserver<Void>() {
-//                    @Override
-//                    public void onNext(Void aVoid) {}
-//                    @Override
-//                    public void onError(Throwable e) {Timber.v(e);}
-//                    @Override
-//                    public void onComplete() {
-//                    }
-//                }));
-//    }
+                   @Override
+                   public void onError(Throwable e) {
+                       Timber.v("Error inserting devices");
+                       Timber.v(e);
+                   }
 
-//    public Observable<ContentValues> parseEventDataObservable(String data) {
-//        return Observable.create( e -> {
-//            try {
-//                JSONObject event = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
-//                ContentValues values = new ContentValues();
-//                values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, event.getString("entity_id"));
-//                values.put(DatabaseContract.HAPanel.COLUMN_STATE, event.getString("state"));
-//                values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, event.getString("attributes"));
-//                values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, event.getString("last_updated"));
-//                String[] parts = event.getString("entity_id").split("\\.");
-//                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, parts[0]);
-//                e.onNext(values);
-//
-//            } catch (JSONException d) {
-//                e.onError(d);
-//            }
-//        });
-//    }
+                   @Override
+                   public void onComplete() {
+                       Timber.v("Inserted/Updated Devices");
+                   }
+               }));
+    }
+
+    private Observable<Void> parseStateDataObservable(String data) {
+        return Observable.create(e -> {
+            try {
+                JSONObject statesResult = new JSONObject(data);
+                JSONArray result = statesResult.getJSONArray("result");
+                for (int i = 0; i < result.length(); i++) {
+                    JSONObject device = result.getJSONObject(i);
+                    DeviceModel deviceModel = new DeviceModel(
+                            device.getString("entity_id"),
+                            device.getString("state"),
+                            device.getString("last_changed"),
+                            device.getString("attributes"));
+
+                    long id = deviceRepository.addDevice(deviceModel);
+                    if(id!=-1) {
+                        Timber.v("Inserted device with row ID: " + id + "and entityID: " + deviceModel.getEntity_id());
+                    }
+                    else {
+                        int updateID = deviceRepository.updateDevice(deviceModel);
+                        Timber.v("Updated " + updateID + " device with entityID " + deviceModel.getEntity_id());
+                    }
+                }
+                e.onComplete();
+            } catch (JSONException j) {
+                e.onError(j);
+            }
+        });
+    }
+
+    private void saveEventData(String data) {
+        disposables.add(parseEventDataObservable(data)
+                .map(deviceRepository::updateDevice)
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableObserver<Integer>() {
+                    @Override
+                    public void onNext(Integer aInt) {
+                        Timber.v("Updated " + aInt + " device");
+                    }
+                    @Override
+                    public void onError(Throwable e) {Timber.v(e);}
+                    @Override
+                    public void onComplete() {
+                    }
+                }));
+    }
+
+    public Observable<DeviceModel> parseEventDataObservable(String data) {
+        return Observable.create( e -> {
+            try {
+                JSONObject device = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
+                DeviceModel deviceModel = new DeviceModel(
+                        device.getString("entity_id"),
+                        device.getString("state"),
+                        device.getString("last_changed"),
+                        device.getString("attributes"));
+                e.onNext(deviceModel);
+
+            } catch (JSONException d) {
+                e.onError(d);
+            }
+        });
+    }
 
 
     public void onDestroy() {

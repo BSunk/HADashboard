@@ -1,7 +1,7 @@
 package com.bsunk.hapanel.data;
 
+import com.bsunk.hapanel.data.local.DeviceRepository;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
-import com.bsunk.hapanel.data.remote.WebSocketConnection;
 
 import javax.inject.Inject;
 
@@ -12,20 +12,19 @@ import javax.inject.Inject;
 public class DataManager {
 
     private final SharedPrefHelper sharedPrefHelper;
-    private final WebSocketConnection webSocketConnection;
+    private final DeviceRepository deviceRepository;
+
 
     @Inject
-    public DataManager(SharedPrefHelper sharedPrefHelper, WebSocketConnection webSocketConnection) {
+    public DataManager(SharedPrefHelper sharedPrefHelper, DeviceRepository deviceRepository) {
         this.sharedPrefHelper = sharedPrefHelper;
-        this.webSocketConnection = webSocketConnection;
+        this.deviceRepository = deviceRepository;
     }
 
     public SharedPrefHelper getSharedPrefHelper() {
         return sharedPrefHelper;
     }
 
-    public WebSocketConnection getWebSocketConnection() {
-        return webSocketConnection;
-    }
+    public DeviceRepository getDeviceRepository() {return deviceRepository;}
 
 }

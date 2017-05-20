@@ -28,6 +28,7 @@ public interface ApplicationComponent {
 
     @ApplicationContext Context context();
     Application application();
+    WebSocketConnection webSocketConnection();
     DataManager dataManager();
 
 }

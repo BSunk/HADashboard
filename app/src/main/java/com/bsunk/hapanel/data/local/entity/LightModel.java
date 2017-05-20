@@ -1,8 +1,10 @@
-package com.bsunk.hapanel.data.model;
+package com.bsunk.hapanel.data.local.entity;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+
+import com.bsunk.hapanel.data.local.entity.DeviceModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;

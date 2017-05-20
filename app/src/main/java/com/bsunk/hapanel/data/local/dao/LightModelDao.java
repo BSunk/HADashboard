@@ -5,7 +5,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Update;
 
-import com.bsunk.hapanel.data.model.LightModel;
+import com.bsunk.hapanel.data.local.entity.LightModel;
 
 /**
  * Created by bryan on 5/19/17.
