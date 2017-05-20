@@ -2,9 +2,9 @@ package com.bsunk.hapanel.data.remote;
 
 import android.content.ContentValues;
 
-import com.bsunk.hapanel.data.local.DatabaseContract;
-import com.bsunk.hapanel.data.local.DatabaseHelper;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
+import com.bsunk.hapanel.data.model.DeviceModel;
+import com.bsunk.hapanel.data.model.LightModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,12 +15,9 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -53,7 +50,6 @@ public class WebSocketConnection extends WebSocketListener {
     private PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
 
     private final OkHttpClient mClient;
-    private DatabaseHelper dataBaseHelper;
     private SharedPrefHelper sharedPrefHelper;
 
     private char[] pw;
@@ -66,10 +62,9 @@ public class WebSocketConnection extends WebSocketListener {
     private WebSocket ws;
 
     @Inject
-    public WebSocketConnection(OkHttpClient client, DatabaseHelper dataBaseHelper, SharedPrefHelper sharedPrefHelper)
+    public WebSocketConnection(OkHttpClient client, SharedPrefHelper sharedPrefHelper)
     {
         mClient = client;
-        this.dataBaseHelper = dataBaseHelper;
         this.sharedPrefHelper = sharedPrefHelper;
     }
 
@@ -123,7 +118,7 @@ public class WebSocketConnection extends WebSocketListener {
                         parseResult(text);
                         break;
                     case TYPE_EVENT:
-                        saveEventData(text);
+                        //saveEventData(text);
                         break;
                 }
             }
@@ -203,7 +198,7 @@ public class WebSocketConnection extends WebSocketListener {
                 parseConfigData(data);
             }
             else if(id == stateID) {
-                saveStateData(data);
+              //  saveStateData(data);
             }
         }
         catch (JSONException e) {
@@ -240,77 +235,79 @@ public class WebSocketConnection extends WebSocketListener {
                 }));
     }
 
-    private void saveStateData(String data) {
-        disposables.add(parseStateDataObservable(data)
-                .flatMap(contentValues -> dataBaseHelper.bulkAddOrUpdateDevice(contentValues))
-                .subscribeOn(Schedulers.io())
-                .subscribeWith(new DisposableObserver<Void>() {
-                    @Override
-                    public void onNext(Void aVoid) {}
-                    @Override
-                    public void onError(Throwable e) {Timber.v(e);}
-                    @Override
-                    public void onComplete() {}
-                }));
-    }
+//    private void saveStateData(String data) {
+//        disposables.add(parseStateDataObservable(data)
+//                .flatMapIterable(deviceModels -> deviceModels)
+//                .flatMap(deviceModel -> realmRepository.saveOrUpdateLightDevice((LightModel) deviceModel))
+//                .subscribeOn(Schedulers.io())
+//                .subscribeWith(new DisposableObserver<Void>() {
+//                    @Override
+//                    public void onNext(Void aVoid) {}
+//                    @Override
+//                    public void onError(Throwable e) {Timber.v(e);}
+//                    @Override
+//                    public void onComplete() {}
+//                }));
+//    }
+//
+//    public Observable<ArrayList<DeviceModel>> parseStateDataObservable(String data) {
+//        return Observable.create(e -> {
+//            try {
+//                ArrayList<DeviceModel> devices = new ArrayList<>();
+//                JSONObject statesResult = new JSONObject(data);
+//                JSONArray result = statesResult.getJSONArray("result");
+//                for (int i = 0; i < result.length(); i++) {
+//                    JSONObject device = result.getJSONObject(i);
+//                    String[] parts = device.getString("entity_id").split("\\.");
+//                    if(parts[0].equals("light")) {
+//                        LightModel lightModel = new LightModel(device.getString("entity_id"),
+//                                device.getString("state"),
+//                                device.getString("last_changed"),
+//                                device.getString("attributes"));
+//                        devices.add(lightModel);
+//                    }
+//
+//                }
+//                e.onNext(devices);
+//            } catch (JSONException j) {
+//                e.onError(j);
+//            }
+//        });
+//    }
 
-    public Observable<ArrayList<ContentValues>> parseStateDataObservable(String data) {
-        return Observable.create(e -> {
-            try {
-                ArrayList<ContentValues> devices = new ArrayList<>();
-                JSONObject statesResult = new JSONObject(data);
-                JSONArray result = statesResult.getJSONArray("result");
-                for (int i = 0; i < result.length(); i++) {
-                    JSONObject device = result.getJSONObject(i);
-                    ContentValues values = new ContentValues();
-                    values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, device.getString("entity_id"));
-                    values.put(DatabaseContract.HAPanel.COLUMN_STATE, device.getString("state"));
-                    values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, device.getString("attributes"));
-                    values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, device.getString("last_updated"));
-                    String[] parts = device.getString("entity_id").split("\\.");
-                    values.put(DatabaseContract.HAPanel.COLUMN_TYPE, parts[0]);
-                    devices.add(values);
-                }
-                e.onNext(devices);
-            } catch (JSONException j) {
-                e.onError(j);
-            }
-        });
-    }
+//    private void saveEventData(String data) {
+//        disposables.add(parseEventDataObservable(data)
+//                .flatMap(contentValues -> dataBaseHelper.addOrUpdateDevice(contentValues))
+//                .subscribeOn(Schedulers.io())
+//                .subscribeWith(new DisposableObserver<Void>() {
+//                    @Override
+//                    public void onNext(Void aVoid) {}
+//                    @Override
+//                    public void onError(Throwable e) {Timber.v(e);}
+//                    @Override
+//                    public void onComplete() {
+//                    }
+//                }));
+//    }
 
-    private void saveEventData(String data) {
-        disposables.add(parseEventDataObservable(data)
-                .flatMap(contentValues -> dataBaseHelper.addOrUpdateDevice(contentValues))
-                .subscribeOn(Schedulers.io())
-                .subscribeWith(new DisposableObserver<Void>() {
-                    @Override
-                    public void onNext(Void aVoid) {}
-                    @Override
-                    public void onError(Throwable e) {Timber.v(e);}
-                    @Override
-                    public void onComplete() {
-                    }
-                }));
-    }
-
-    public Observable<ContentValues> parseEventDataObservable(String data) {
-        return Observable.create( e -> {
-            try {
-                JSONObject event = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
-                ContentValues values = new ContentValues();
-                values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, event.getString("entity_id"));
-                values.put(DatabaseContract.HAPanel.COLUMN_STATE, event.getString("state"));
-                values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, event.getString("attributes"));
-                values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, event.getString("last_updated"));
-                String[] parts = event.getString("entity_id").split("\\.");
-                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, parts[0]);
-                e.onNext(values);
-
-            } catch (JSONException d) {
-                e.onError(d);
-            }
-        });
-    }
+//    public Observable<ContentValues> parseEventDataObservable(String data) {
+//        return Observable.create( e -> {
+//            try {
+//                JSONObject event = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
+//                ContentValues values = new ContentValues();
+//                values.put(DatabaseContract.HAPanel.COLUMN_ENTITY_ID, event.getString("entity_id"));
+//                values.put(DatabaseContract.HAPanel.COLUMN_STATE, event.getString("state"));
+//                values.put(DatabaseContract.HAPanel.COLUMN_ATTRIBUTES, event.getString("attributes"));
+//                values.put(DatabaseContract.HAPanel.COLUMN_LAST_CHANGED, event.getString("last_updated"));
+//                String[] parts = event.getString("entity_id").split("\\.");
+//                values.put(DatabaseContract.HAPanel.COLUMN_TYPE, parts[0]);
+//                e.onNext(values);
+//
+//            } catch (JSONException d) {
+//                e.onError(d);
+//            }
+//        });
+//    }
 
 
     public void onDestroy() {

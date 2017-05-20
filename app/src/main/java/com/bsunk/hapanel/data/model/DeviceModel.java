@@ -1,15 +1,18 @@
 package com.bsunk.hapanel.data.model;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
+import android.arch.persistence.room.PrimaryKey;
+
 /**
  * Created by Bharat on 3/10/2017.
  */
+@Entity(indices = {@Index(value = {"entity_id"}, unique = true)})
+public class DeviceModel  {
 
-public class DeviceModel {
-    private String entity_id;
+    @PrimaryKey private String entity_id;
     private String state;
     private String last_changed;
-    private String attributes;
-    private String type;
     private int position;
     private int hide;
 
@@ -18,15 +21,20 @@ public class DeviceModel {
     }
 
     public DeviceModel(String entity_id, String state,
-                       String last_changed, String attributes,
-                       String type, int position, int hide) {
+                       String last_changed, String attributes) {
         this.entity_id = entity_id;
         this.state = state;
         this.last_changed = last_changed;
-        this.attributes = attributes;
+    }
+
+    public DeviceModel(String entity_id, String state,
+                       String last_changed, String attributes,
+                       int position, int hide) {
+        this.entity_id = entity_id;
+        this.state = state;
+        this.last_changed = last_changed;
         this.position = position;
         this.hide = hide;
-        this.type = type;
     }
 
     public String getEntity_id() {
@@ -53,14 +61,6 @@ public class DeviceModel {
         this.last_changed = last_changed;
     }
 
-    public String getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(String attributes) {
-        this.attributes = attributes;
-    }
-
     public int getPosition() {
         return position;
     }
@@ -69,7 +69,7 @@ public class DeviceModel {
         this.position = position;
     }
 
-    public int isHide() {
+    public int getHide() {
         return hide;
     }
 
@@ -77,24 +77,4 @@ public class DeviceModel {
         this.hide = hide;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return "DeviceModel{" +
-                "entity_id='" + entity_id + '\'' +
-                ", state='" + state + '\'' +
-                ", last_changed='" + last_changed + '\'' +
-                ", attributes='" + attributes + '\'' +
-                ", type='" + type + '\'' +
-                ", position=" + position +
-                ", hide=" + hide +
-                '}';
-    }
 }

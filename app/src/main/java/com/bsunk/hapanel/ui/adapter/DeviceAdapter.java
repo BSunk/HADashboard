@@ -42,12 +42,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if(devices.get(position).getType().equals(LIGHT_TYPE)) {
-            return R.layout.light_item;
-        }
-        else {
-            return R.layout.light_item;
-        }
+//        if(devices.get(position).getType().equals(LIGHT_TYPE)) {
+//            return R.layout.light_item;
+//        }
+//        else {
+//            return R.layout.light_item;
+//        }
+        return R.layout.light_item;
     }
 
     @Override

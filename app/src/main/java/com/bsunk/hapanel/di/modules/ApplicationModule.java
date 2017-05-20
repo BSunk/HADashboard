@@ -1,11 +1,12 @@
 package com.bsunk.hapanel.di.modules;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 
 import com.bsunk.hapanel.data.DataManager;
-import com.bsunk.hapanel.data.local.DatabaseHelper;
-import com.bsunk.hapanel.data.local.DbOpenHelper;
+import com.bsunk.hapanel.data.local.DeviceRepository;
+import com.bsunk.hapanel.data.local.ModelDatabase;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
 import com.bsunk.hapanel.di.ApplicationContext;
@@ -21,6 +22,7 @@ import okhttp3.OkHttpClient;
  */
 @Module
 public class ApplicationModule {
+
     protected final Application mApplication;
 
     public ApplicationModule(Application application) {
@@ -46,16 +48,15 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    WebSocketConnection providesWebSocketConnection(OkHttpClient client, DatabaseHelper databaseHelper, SharedPrefHelper sharedPrefHelper) {
-        return new WebSocketConnection(client, databaseHelper, sharedPrefHelper);
+    WebSocketConnection providesWebSocketConnection(OkHttpClient client, SharedPrefHelper sharedPrefHelper) {
+        return new WebSocketConnection(client, sharedPrefHelper);
     }
 
     @Singleton
     @Provides
     DataManager providesDataManager(SharedPrefHelper sharedPrefHelper,
-                                    DatabaseHelper databaseHelper,
                                     WebSocketConnection webSocketConnection) {
-        return new DataManager(sharedPrefHelper, databaseHelper, webSocketConnection);
+        return new DataManager(sharedPrefHelper, webSocketConnection);
     }
 
     @Singleton
@@ -64,16 +65,16 @@ public class ApplicationModule {
         return new SharedPrefHelper(mApplication);
     }
 
-    @Singleton
     @Provides
-    DatabaseHelper providesDataBaseHelper(DbOpenHelper dbOpenHelper) {
-        return new DatabaseHelper(dbOpenHelper);
+    @Singleton
+    ModelDatabase providesModelDatabase(Context context) {
+        return Room.databaseBuilder(context.getApplicationContext(), ModelDatabase.class, "ha_db").build();
     }
 
-    @Singleton
     @Provides
-    DbOpenHelper providesDbOpenHelper() {
-        return new DbOpenHelper(mApplication);
+    @Singleton
+    DeviceRepository providesDeviceRepository(ModelDatabase modelDatabase) {
+        return new DeviceRepository(modelDatabase);
     }
 
 }

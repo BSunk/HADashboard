@@ -52,8 +52,6 @@ public class ConnectionService extends Service {
 
         HAApplication.get(this).getApplicationComponent().inject(this);
 
-        dataManager.getDataBaseHelper().open();
-
         mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationBuilder = new NotificationCompat.Builder(this);
@@ -116,7 +114,6 @@ public class ConnectionService extends Service {
     public void onDestroy() {
         disposables.clear();
         dataManager.getWebSocketConnection().onDestroy();
-        dataManager.getDataBaseHelper().close();
     }
 
     //Handles the websocket events and updates the notification depending on the event.

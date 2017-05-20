@@ -32,7 +32,6 @@ public class HomeFragmentPresenter implements HomeFragmentContract.Presenter {
     @Override
     public void subscribe(HomeFragmentContract.View view) {
         this.mView = view;
-        initDeviceList();
     }
 
     @Override
@@ -41,27 +40,27 @@ public class HomeFragmentPresenter implements HomeFragmentContract.Presenter {
         disposable.dispose();
     }
 
-    private void initDeviceList() {
+    public void initDeviceList() {
 
-        disposable.add(dataManager.getDataBaseHelper().getAllDevices()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<ArrayList<DeviceModel>>() {
-            @Override
-            public void onNext(ArrayList<DeviceModel> deviceModels) {
-                mView.initializeRecyclerView(deviceModels);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        }));
+//        disposable.add(dataManager.getDataBaseHelper().getAllDevices()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeWith(new DisposableObserver<ArrayList<DeviceModel>>() {
+//            @Override
+//            public void onNext(ArrayList<DeviceModel> deviceModels) {
+//                mView.initializeRecyclerView(deviceModels);
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                e.printStackTrace();
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//
+//            }
+//        }));
     }
 
 }
