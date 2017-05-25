@@ -1,10 +1,14 @@
 package com.bsunk.hapanel.ui.home;
 
 import com.bsunk.hapanel.data.DataManager;
+import com.bsunk.hapanel.data.local.entity.DeviceModel;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by bryan on 4/10/17.
@@ -34,26 +38,25 @@ public class HomeFragmentPresenter implements HomeFragmentContract.Presenter {
     }
 
     public void initDeviceList() {
+        disposable.add(dataManager.getDeviceRepository().getAllDevices("light")
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeWith(new DisposableObserver<DeviceModel[]>() {
+            @Override
+            public void onNext(DeviceModel[] deviceModels) {
+                mView.initializeRecyclerView(deviceModels);
+            }
 
-//        disposable.add(dataManager.getDataBaseHelper().getAllDevices()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeWith(new DisposableObserver<ArrayList<DeviceModel>>() {
-//            @Override
-//            public void onNext(ArrayList<DeviceModel> deviceModels) {
-//                mView.initializeRecyclerView(deviceModels);
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                e.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//        }));
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }));
     }
 
 }

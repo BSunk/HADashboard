@@ -17,8 +17,6 @@ import com.bsunk.hapanel.di.components.DaggerActivityComponent;
 import com.bsunk.hapanel.di.modules.ActivityModule;
 import com.bsunk.hapanel.ui.adapter.DeviceAdapter;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 /**
@@ -60,7 +58,7 @@ public class HomeFragment extends Fragment implements HomeFragmentContract.View 
     }
 
     @Override
-    public void initializeRecyclerView(ArrayList<DeviceModel> deviceModels) {
+    public void initializeRecyclerView(DeviceModel[] deviceModels) {
         StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         devicesRecyclerView.setLayoutManager(sglm);
         devicesRecyclerView.setAdapter(new DeviceAdapter(deviceModels));

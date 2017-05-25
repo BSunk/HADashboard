@@ -22,9 +22,9 @@ public interface DeviceModelDao {
     public int updateDevice(DeviceModel deviceModel);
 
     @Delete
-    public int deleteDevice(DeviceModel deviceModels);
+    public int deleteDevice(DeviceModel deviceModel);
 
-    @Query("SELECT * FROM devicemodel")
-    public DeviceModel[] loadAllDevices();
+    @Query("SELECT * FROM devicemodel WHERE type = :typeID ")
+    public DeviceModel[] loadAllDevices(String typeID);
 
 }

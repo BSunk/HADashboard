@@ -9,8 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -28,6 +26,7 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import timber.log.Timber;
 
+import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_AUTH_FAILED;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CLOSED;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTED;
@@ -237,23 +236,23 @@ public class WebSocketConnection extends WebSocketListener {
     }
 
     private void saveStateData(String data) {
-       disposables.add(parseStateDataObservable(data)
-               .subscribeOn(Schedulers.io())
-               .subscribeWith(new DisposableObserver<Void>() {
-                   @Override
-                   public void onNext(Void aVoid) {}
+        disposables.add(parseStateDataObservable(data)
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableObserver<Void>() {
+                    @Override
+                    public void onNext(Void aVoid) {}
 
-                   @Override
-                   public void onError(Throwable e) {
-                       Timber.v("Error inserting devices");
-                       Timber.v(e);
-                   }
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.v("Error inserting devices");
+                        Timber.v(e);
+                    }
 
-                   @Override
-                   public void onComplete() {
-                       Timber.v("Inserted/Updated Devices");
-                   }
-               }));
+                    @Override
+                    public void onComplete() {
+                        Timber.v("Inserted/Updated Devices");
+                    }
+                }));
     }
 
     private Observable<Void> parseStateDataObservable(String data) {
@@ -263,23 +262,24 @@ public class WebSocketConnection extends WebSocketListener {
                 JSONArray result = statesResult.getJSONArray("result");
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject device = result.getJSONObject(i);
-                    DeviceModel deviceModel = new DeviceModel(
-                            device.getString("entity_id"),
+                    String[] parts = device.getString("entity_id").split("\\.");
+                    DeviceModel deviceModel = new DeviceModel(device.getString("entity_id"),
                             device.getString("state"),
                             device.getString("last_changed"),
-                            device.getString("attributes"));
+                            device.getString("attributes"),
+                            parts[0]);
 
                     long id = deviceRepository.addDevice(deviceModel);
-                    if(id!=-1) {
-                        Timber.v("Inserted device with row ID: " + id + "and entityID: " + deviceModel.getEntity_id());
-                    }
-                    else {
+                    if (id != -1) {
+                        Timber.v("Inserted device with row ID: " + id + " and entityID: " + deviceModel.getEntity_id());
+                    } else {
                         int updateID = deviceRepository.updateDevice(deviceModel);
                         Timber.v("Updated " + updateID + " device with entityID " + deviceModel.getEntity_id());
                     }
                 }
                 e.onComplete();
-            } catch (JSONException j) {
+            }
+            catch (JSONException j) {
                 e.onError(j);
             }
         });
@@ -302,23 +302,22 @@ public class WebSocketConnection extends WebSocketListener {
                 }));
     }
 
-    public Observable<DeviceModel> parseEventDataObservable(String data) {
+    private Observable<DeviceModel> parseEventDataObservable(String data) {
         return Observable.create( e -> {
             try {
                 JSONObject device = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
-                DeviceModel deviceModel = new DeviceModel(
-                        device.getString("entity_id"),
-                        device.getString("state"),
-                        device.getString("last_changed"),
-                        device.getString("attributes"));
-                e.onNext(deviceModel);
+                DeviceModel model = new DeviceModel();
+                model.setEntity_id(device.getString("entity_id"));
+                model.setState(device.getString("state"));
+                model.setLast_changed(device.getString("last_changed"));
+                model.setAttributes(device.getString("attributes"));
+                e.onNext(model);
 
             } catch (JSONException d) {
                 e.onError(d);
             }
         });
     }
-
 
     public void onDestroy() {
         disposables.dispose();

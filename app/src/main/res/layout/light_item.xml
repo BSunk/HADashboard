@@ -2,7 +2,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-        <variable name="obj" type="com.bsunk.hapanel.data.local.entity.LightModel"/>
+        <variable name="attributes" type="com.bsunk.hapanel.data.model.LightModel"/>
+        <variable name="device" type="com.bsunk.hapanel.data.local.entity.DeviceModel"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -29,7 +30,7 @@
                 android:layout_marginBottom="5dp"
                 android:maxLength="16"
                 android:textSize="17sp"
-                android:text="@{obj.friendlyName}"/>
+                android:text="@{attributes.friendlyName}"/>
 
             <FrameLayout
                 android:id="@+id/brightness_frame_layout"
@@ -45,7 +46,7 @@
                     android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:padding="25dp"
-                    app:progress="@{obj.brightness}"
+                    app:progress="@{attributes.brightness}"
                     app:arcWidth="5dp"
                     app:max="100"
                     app:rotation="180"
@@ -57,11 +58,13 @@
                     android:id="@+id/device_light_iv"
                     android:src="@drawable/ic_lightbulb_outline_black_24dp"
                     android:clickable="true"
+                    android:focusable="true"
                     android:layout_gravity="center"
                     android:tint="@android:color/white"
                     android:background="?android:selectableItemBackground"
                     android:layout_width="36dp"
-                    android:layout_height="36dp" />
+                    android:layout_height="36dp"
+                    android:contentDescription="@string/light_item_bulb_content_description" />
 
             </FrameLayout>
 
