@@ -28,9 +28,6 @@ public class LightModel {
     @SerializedName("rgb_color")
     @Expose
     private List<Integer> rgbColor = null;
-    @SerializedName("supported_features")
-    @Expose
-    private Integer supportedFeatures;
     @SerializedName("white_value")
     @Expose
     private Integer whiteValue;
@@ -84,14 +81,6 @@ public class LightModel {
 
     public void setRgbColor(List<Integer> rgbColor) {
         this.rgbColor = rgbColor;
-    }
-
-    public Integer getSupportedFeatures() {
-        return supportedFeatures;
-    }
-
-    public void setSupportedFeatures(Integer supportedFeatures) {
-        this.supportedFeatures = supportedFeatures;
     }
 
     public Integer getWhiteValue() {

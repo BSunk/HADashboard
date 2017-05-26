@@ -1,5 +1,6 @@
 package com.bsunk.hapanel.data.local.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -8,6 +9,8 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.bsunk.hapanel.data.local.entity.DeviceModel;
+
+import java.util.List;
 
 /**
  * Created by bryan on 5/18/17.
@@ -24,7 +27,10 @@ public interface DeviceModelDao {
     @Delete
     public int deleteDevice(DeviceModel deviceModel);
 
-    @Query("SELECT * FROM devicemodel WHERE type = :typeID ")
-    public DeviceModel[] loadAllDevices(String typeID);
+    @Query("SELECT * FROM devicemodel WHERE type = 'light' ")
+    public List<DeviceModel> loadAllDevices();
+
+    @Query("SELECT * FROM devicemodel WHERE type = 'light' ")
+    public LiveData<List<DeviceModel>> getDevices();
 
 }

@@ -306,12 +306,13 @@ public class WebSocketConnection extends WebSocketListener {
         return Observable.create( e -> {
             try {
                 JSONObject device = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
-                DeviceModel model = new DeviceModel();
-                model.setEntity_id(device.getString("entity_id"));
-                model.setState(device.getString("state"));
-                model.setLast_changed(device.getString("last_changed"));
-                model.setAttributes(device.getString("attributes"));
-                e.onNext(model);
+                String[] parts = device.getString("entity_id").split("\\.");
+                DeviceModel deviceModel = new DeviceModel(device.getString("entity_id"),
+                        device.getString("state"),
+                        device.getString("last_changed"),
+                        device.getString("attributes"),
+                        parts[0]);
+                e.onNext(deviceModel);
 
             } catch (JSONException d) {
                 e.onError(d);

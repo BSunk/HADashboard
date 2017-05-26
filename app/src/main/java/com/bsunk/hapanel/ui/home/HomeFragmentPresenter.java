@@ -3,6 +3,8 @@ package com.bsunk.hapanel.ui.home;
 import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.local.entity.DeviceModel;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -38,12 +40,12 @@ public class HomeFragmentPresenter implements HomeFragmentContract.Presenter {
     }
 
     public void initDeviceList() {
-        disposable.add(dataManager.getDeviceRepository().getAllDevices("light")
+        disposable.add(dataManager.getDeviceRepository().getAllDevices()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribeWith(new DisposableObserver<DeviceModel[]>() {
+        .subscribeWith(new DisposableObserver<List<DeviceModel>>() {
             @Override
-            public void onNext(DeviceModel[] deviceModels) {
+            public void onNext(List<DeviceModel> deviceModels) {
                 mView.initializeRecyclerView(deviceModels);
             }
 

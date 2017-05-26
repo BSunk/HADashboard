@@ -12,7 +12,7 @@ import com.bsunk.hapanel.data.local.entity.DeviceModel;
 import com.bsunk.hapanel.data.model.LightModel;
 import com.google.gson.Gson;
 
-import timber.log.Timber;
+import java.util.List;
 
 import static android.widget.Adapter.IGNORE_ITEM_VIEW_TYPE;
 import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
@@ -23,9 +23,9 @@ import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHolder> {
 
-    private DeviceModel[] devices;
+    private List<DeviceModel> devices;
 
-    public DeviceAdapter(DeviceModel[] devices) {
+    public DeviceAdapter(List<DeviceModel> devices) {
         this.devices = devices;
     }
 
@@ -38,18 +38,17 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Gson gson = new Gson();
 
-        switch (devices[position].getType()) {
+        switch (devices.get(position).getType()) {
             case LIGHT_TYPE:
-                LightModel lightModel = gson.fromJson(devices[position].getAttributes(), LightModel.class);
-                Timber.v(lightModel.getFriendlyName());
-                holder.bind(lightModel, devices[position]);
+                LightModel lightModel = gson.fromJson(devices.get(position).getAttributes(), LightModel.class);
+                holder.bind(lightModel, devices.get(position));
                 break;
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        switch (devices[position].getType()) {
+        switch (devices.get(position).getType()) {
             case LIGHT_TYPE:
                 return  R.layout.light_item;
             default:
@@ -57,9 +56,14 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
         }
     }
 
+    public void setItems(List<DeviceModel> devices) {
+        this.devices = devices;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return devices.length;
+        return devices.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

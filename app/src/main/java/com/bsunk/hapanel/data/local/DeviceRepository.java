@@ -1,6 +1,10 @@
 package com.bsunk.hapanel.data.local;
 
+import android.arch.lifecycle.LiveData;
+
 import com.bsunk.hapanel.data.local.entity.DeviceModel;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -33,8 +37,12 @@ public class DeviceRepository {
         return Completable.fromAction(() -> modelDatabase.deviceModelDao().deleteDevice(deviceModel));
     }
 
-    public Observable<DeviceModel[]> getAllDevices(String typeID) {
-        return Observable.create((ObservableEmitter<DeviceModel[]> e) -> e.onNext(modelDatabase.deviceModelDao().loadAllDevices(typeID)));
+    public Observable<List<DeviceModel>> getAllDevices() {
+        return Observable.create((ObservableEmitter<List<DeviceModel>> e) -> e.onNext(modelDatabase.deviceModelDao().loadAllDevices()));
+    }
+
+    public LiveData<List<DeviceModel>> getAllDevicesLiveData() {
+        return modelDatabase.deviceModelDao().getDevices();
     }
 
 }
