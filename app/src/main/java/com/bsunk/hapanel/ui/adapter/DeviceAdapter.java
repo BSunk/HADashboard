@@ -10,12 +10,15 @@ import com.android.databinding.library.baseAdapters.BR;
 import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.local.entity.DeviceModel;
 import com.bsunk.hapanel.data.model.LightModel;
+import com.bsunk.hapanel.data.model.SensorModel;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.Adapter.IGNORE_ITEM_VIEW_TYPE;
 import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
+import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.SENSOR_TYPE;
 
 /**
  * Created by bryan on 4/13/17.
@@ -43,6 +46,10 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
                 LightModel lightModel = gson.fromJson(devices.get(position).getAttributes(), LightModel.class);
                 holder.bind(lightModel, devices.get(position));
                 break;
+            case SENSOR_TYPE:
+                SensorModel sensorModel = gson.fromJson(devices.get(position).getAttributes(), SensorModel.class);
+                holder.bind(sensorModel, devices.get(position));
+                break;
         }
     }
 
@@ -51,6 +58,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
         switch (devices.get(position).getType()) {
             case LIGHT_TYPE:
                 return  R.layout.light_item;
+            case SENSOR_TYPE:
+                return R.layout.sensor_item;
             default:
                 return IGNORE_ITEM_VIEW_TYPE;
         }
@@ -58,6 +67,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
 
     public void setItems(List<DeviceModel> devices) {
         this.devices = devices;
+
         notifyDataSetChanged();
     }
 

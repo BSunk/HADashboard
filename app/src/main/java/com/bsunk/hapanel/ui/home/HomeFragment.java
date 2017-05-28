@@ -72,9 +72,7 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
         devicesRecyclerView.setAdapter(adapter);
 
         //Data set changed. Update RecyclerView
-        dataManager.getDeviceRepository().getAllDevicesLiveData().observe(this, deviceModelList -> {
-            adapter.setItems(deviceModelList);
-        });
+        dataManager.getDeviceRepository().getAllDevicesLiveData().observe(this, deviceModelList -> adapter.setItems(deviceModelList));
     }
 
     @Override

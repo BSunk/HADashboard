@@ -27,10 +27,10 @@ public interface DeviceModelDao {
     @Delete
     public int deleteDevice(DeviceModel deviceModel);
 
-    @Query("SELECT * FROM devicemodel WHERE type = 'light' ")
+    @Query("SELECT * FROM devicemodel WHERE type = 'light' OR type = 'sensor' ")
     public List<DeviceModel> loadAllDevices();
 
-    @Query("SELECT * FROM devicemodel WHERE type = 'light' ")
+    @Query("SELECT * FROM devicemodel WHERE type = 'light' OR type = 'sensor' ")
     public LiveData<List<DeviceModel>> getDevices();
 
 }
