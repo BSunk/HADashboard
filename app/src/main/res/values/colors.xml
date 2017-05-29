@@ -12,4 +12,6 @@
     <color name="connection_box_background_connected">#af0c9150</color>
     <color name="light_item_background">#e27655</color>
     <color name="sensor_item_background">#e3413e3d</color>
+    <color name="binary_sensor_item_background_on">#e59e2127</color>
+    <color name="binary_sensor_item_background_off">#e30e1d0e</color>
 </resources>

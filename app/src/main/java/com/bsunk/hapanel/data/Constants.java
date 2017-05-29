@@ -50,6 +50,7 @@ public class Constants {
     public interface DEVICE_TYPE {
         String SENSOR_TYPE = "sensor";
         String LIGHT_TYPE = "light";
+        String BINARY_SENSOR_TYPE = "binary_sensor";
         String MEDIA_PLAYER_TYPE = "media_player";
     }
 

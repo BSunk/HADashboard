@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.android.databinding.library.baseAdapters.BR;
 import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.local.entity.DeviceModel;
+import com.bsunk.hapanel.data.model.BinarySensorModel;
 import com.bsunk.hapanel.data.model.LightModel;
 import com.bsunk.hapanel.data.model.SensorModel;
 import com.google.gson.Gson;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.Adapter.IGNORE_ITEM_VIEW_TYPE;
+import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.BINARY_SENSOR_TYPE;
 import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
 import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.SENSOR_TYPE;
 
@@ -50,6 +52,10 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
                 SensorModel sensorModel = gson.fromJson(devices.get(position).getAttributes(), SensorModel.class);
                 holder.bind(sensorModel, devices.get(position));
                 break;
+            case BINARY_SENSOR_TYPE:
+                BinarySensorModel binarySensorModel = gson.fromJson(devices.get(position).getAttributes(), BinarySensorModel.class);
+                holder.bind(binarySensorModel, devices.get(position));
+                break;
         }
     }
 
@@ -60,6 +66,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
                 return  R.layout.light_item;
             case SENSOR_TYPE:
                 return R.layout.sensor_item;
+            case BINARY_SENSOR_TYPE:
+                return R.layout.binary_sensor_item;
             default:
                 return IGNORE_ITEM_VIEW_TYPE;
         }

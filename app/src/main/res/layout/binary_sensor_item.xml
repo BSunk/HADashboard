@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable name="attributes" type="com.bsunk.hapanel.data.model.BinarySensorModel"/>
+        <variable name="device" type="com.bsunk.hapanel.data.local.entity.DeviceModel"/>
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="5dp"
+        app:cardBackgroundColor='@{device.state.equals("on") ? @color/binary_sensor_item_background_on : @color/binary_sensor_item_background_off}'>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/device_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textSize="15sp"
+                android:text="@{attributes.friendlyName}"/>
+
+            <TextView
+                android:id="@+id/state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/device_name"
+                android:textSize="26sp"
+                android:layout_centerHorizontal="true"
+                android:text="@{attributes.deviceClass}"/>
+
+
+
+            <!--<ImageView-->
+                <!--android:id="@+id/alert_notification_iv"-->
+                <!--android:src="@drawable/ic_notifications_off_black_24dp"-->
+                <!--android:layout_below="@+id/brightness_frame_layout"-->
+                <!--android:tint="@color/background"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
+
+            <!--<ImageView-->
+                <!--android:id="@+id/audio_notification_iv"-->
+                <!--android:src="@drawable/ic_volume_off_black_24dp"-->
+                <!--android:layout_toEndOf="@+id/alert_notification_iv"-->
+                <!--android:layout_marginStart="5dp"-->
+                <!--android:layout_below="@+id/brightness_frame_layout"-->
+                <!--android:tint="@color/background"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
+
+            <!--<ImageView-->
+                <!--android:id="@+id/drag_handle"-->
+                <!--android:src="@drawable/ic_drag_handle_black_24dp"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_marginEnd="5dp"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</layout>
