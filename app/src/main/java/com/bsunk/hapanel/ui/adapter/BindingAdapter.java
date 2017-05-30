@@ -28,19 +28,16 @@ public class BindingAdapter {
         switch (state) {
             case "on":
                 if(rgbColor!=null) {
-                    //cardView.setCardBackgroundColor(Color.argb(255, rgbColor.get(0), rgbColor.get(1), rgbColor.get(2)));
-                    colorTo = Color.argb(255, rgbColor.get(0), rgbColor.get(1), rgbColor.get(2));
+                    colorTo = Color.argb(200, rgbColor.get(0), rgbColor.get(1), rgbColor.get(2));
                     colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
                 }
                 else {
-                    //cardView.setCardBackgroundColor(Color.argb(255, 191, 226, 109));
-                    colorTo = Color.argb(255, 191, 226, 109);
+                    colorTo = Color.argb(200, 191, 226, 109);
                     colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
                 }
                 break;
             case "off":
-                //cardView.setCardBackgroundColor(Color.argb(255, 51, 25, 0));
-                colorTo = Color.argb(255, 127, 98, 98);
+                colorTo = Color.argb(200, 127, 98, 98);
                 colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         }
 
