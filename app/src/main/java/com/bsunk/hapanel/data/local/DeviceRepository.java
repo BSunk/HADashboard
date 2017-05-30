@@ -1,14 +1,11 @@
 package com.bsunk.hapanel.data.local;
 
-import android.arch.lifecycle.LiveData;
-
-import com.bsunk.hapanel.data.local.entity.DeviceModel;
+import com.bsunk.hapanel.data.local.entity.DeviceProperties;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 
@@ -25,24 +22,16 @@ public class DeviceRepository {
         this.modelDatabase = modelDatabase;
     }
 
-    public long addDevice(DeviceModel lightModel) {
+    public long addDevice(DeviceProperties lightModel) {
         return modelDatabase.deviceModelDao().insertDevice(lightModel);
     }
 
-    public int updateDevice(DeviceModel deviceModel) {
-        return modelDatabase.deviceModelDao().updateDevice(deviceModel);
+    public int updateDevice(DeviceProperties deviceProperties) {
+        return modelDatabase.deviceModelDao().updateDevice(deviceProperties);
     }
 
-    public Completable deleteLight(DeviceModel deviceModel) {
-        return Completable.fromAction(() -> modelDatabase.deviceModelDao().deleteDevice(deviceModel));
-    }
-
-    public Observable<List<DeviceModel>> getAllDevices() {
-        return Observable.create((ObservableEmitter<List<DeviceModel>> e) -> e.onNext(modelDatabase.deviceModelDao().loadAllDevices()));
-    }
-
-    public LiveData<List<DeviceModel>> getAllDevicesLiveData() {
-        return modelDatabase.deviceModelDao().getDevices();
+    public Observable<List<DeviceProperties>> getAllDevices() {
+        return Observable.create((ObservableEmitter<List<DeviceProperties>> e) -> e.onNext(modelDatabase.deviceModelDao().loadAllDevices()));
     }
 
 }

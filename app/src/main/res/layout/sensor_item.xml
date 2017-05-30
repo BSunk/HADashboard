@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable name="attributes" type="com.bsunk.hapanel.data.model.SensorModel"/>
-        <variable name="device" type="com.bsunk.hapanel.data.local.entity.DeviceModel"/>
+        <variable name="device" type="com.bsunk.hapanel.data.model.DeviceModel"/>
     </data>
 
     <android.support.v7.widget.CardView

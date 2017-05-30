@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable name="attributes" type="com.bsunk.hapanel.data.model.BinarySensorModel"/>
-        <variable name="device" type="com.bsunk.hapanel.data.local.entity.DeviceModel"/>
+        <variable name="device" type="com.bsunk.hapanel.data.model.DeviceModel"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -15,7 +15,7 @@
         android:layout_marginEnd="5dp"
         app:cardCornerRadius="2dp"
         app:cardElevation="5dp"
-        app:cardBackgroundColor='@{device.state.equals("on") ? @color/binary_sensor_item_background_on : @color/binary_sensor_item_background_off}'>
+        app:cardBackgroundColor="@color/binary_sensor_item_background">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -27,18 +27,28 @@
                 android:id="@+id/device_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
                 android:layout_marginBottom="5dp"
                 android:textSize="15sp"
                 android:text="@{attributes.friendlyName}"/>
+
+            <ImageView
+                android:id="@+id/indicator_iv"
+                android:layout_below="@+id/device_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src='@{device.state.equals("on") ? @drawable/binary_sensor_indicator_on : @drawable/binary_sensor_indicator_off}'/>
 
             <TextView
                 android:id="@+id/state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/device_name"
-                android:textSize="26sp"
+                android:layout_below="@+id/indicator_iv"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
                 android:layout_centerHorizontal="true"
-                android:text="@{attributes.deviceClass}"/>
+                android:text='@{attributes.deviceClass + " sensor"}'/>
 
 
 

@@ -1,6 +1,5 @@
 package com.bsunk.hapanel.data.local.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -8,7 +7,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.bsunk.hapanel.data.local.entity.DeviceModel;
+import com.bsunk.hapanel.data.local.entity.DeviceProperties;
 
 import java.util.List;
 
@@ -19,18 +18,15 @@ import java.util.List;
 public interface DeviceModelDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public long insertDevice(DeviceModel deviceModel);
+    public long insertDevice(DeviceProperties deviceProperties);
 
     @Update
-    public int updateDevice(DeviceModel deviceModel);
+    public int updateDevice(DeviceProperties deviceProperties);
 
     @Delete
-    public int deleteDevice(DeviceModel deviceModel);
+    public int deleteDevice(DeviceProperties deviceProperties);
 
-    @Query("SELECT * FROM devicemodel WHERE type = 'light' OR type = 'sensor' OR type = 'binary_sensor'  ")
-    public List<DeviceModel> loadAllDevices();
-
-    @Query("SELECT * FROM devicemodel WHERE type = 'light' OR type = 'sensor' OR type = 'binary_sensor' ")
-    public LiveData<List<DeviceModel>> getDevices();
+    @Query("SELECT * FROM deviceproperties")
+    public List<DeviceProperties> loadAllDevices();
 
 }

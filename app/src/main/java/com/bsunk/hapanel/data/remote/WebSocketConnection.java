@@ -3,21 +3,32 @@ package com.bsunk.hapanel.data.remote;
 import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.local.DeviceRepository;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
-import com.bsunk.hapanel.data.local.entity.DeviceModel;
+import com.bsunk.hapanel.data.local.entity.DeviceProperties;
+import com.bsunk.hapanel.data.model.DeviceModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Action;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,7 +37,9 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import timber.log.Timber;
 
+import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.BINARY_SENSOR_TYPE;
 import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.LIGHT_TYPE;
+import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.SENSOR_TYPE;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_AUTH_FAILED;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CLOSED;
 import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_CONNECTED;
@@ -48,6 +61,9 @@ public class WebSocketConnection extends WebSocketListener {
     private final SharedPrefHelper sharedPrefHelper;
     private final DeviceRepository deviceRepository;
     private PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
+    private BehaviorSubject<DeviceListUpdateModel> deviceModelsBus = BehaviorSubject.create();
+
+    private final List<DeviceModel> deviceModelsList = new ArrayList<>();
 
     private final OkHttpClient mClient;
 
@@ -256,6 +272,7 @@ public class WebSocketConnection extends WebSocketListener {
     }
 
     private Observable<Void> parseStateDataObservable(String data) {
+        deviceModelsList.clear();
         return Observable.create(e -> {
             try {
                 JSONObject statesResult = new JSONObject(data);
@@ -263,20 +280,24 @@ public class WebSocketConnection extends WebSocketListener {
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject device = result.getJSONObject(i);
                     String[] parts = device.getString("entity_id").split("\\.");
-                    DeviceModel deviceModel = new DeviceModel(device.getString("entity_id"),
-                            device.getString("state"),
-                            device.getString("last_changed"),
-                            device.getString("attributes"),
-                            parts[0]);
-
-                    long id = deviceRepository.addDevice(deviceModel);
-                    if (id != -1) {
-                        Timber.v("Inserted device with row ID: " + id + " and entityID: " + deviceModel.getEntity_id());
-                    } else {
-                        int updateID = deviceRepository.updateDevice(deviceModel);
-                        Timber.v("Updated " + updateID + " device with entityID " + deviceModel.getEntity_id());
+                    if(parts[0].equals(LIGHT_TYPE) || parts[0].equals(SENSOR_TYPE) || parts[0].equals(BINARY_SENSOR_TYPE)) {
+                        DeviceModel deviceModel = new DeviceModel(device.getString("entity_id"),
+                                device.getString("state"),
+                                device.getString("last_changed"),
+                                device.getString("attributes"),
+                                parts[0]);
+                        deviceModelsList.add(deviceModel);
+                        DeviceProperties deviceProperties = new DeviceProperties(deviceModel.getEntity_id());
+                        //long id = deviceRepository.addDevice(deviceProperties);
+//                    if (id != -1) {
+//                        Timber.v("Inserted device with row ID: " + id + " and entityID: " + deviceModel.getEntity_id());
+//                    } else {
+//                        int updateID = deviceRepository.updateDevice(deviceProperties);
+//                        Timber.v("Updated " + updateID + " device with entityID " + deviceModel.getEntity_id());
+//                    }
                     }
                 }
+                deviceModelsBus.onNext(new DeviceListUpdateModel(-1, deviceModelsList));
                 e.onComplete();
             }
             catch (JSONException j) {
@@ -287,32 +308,29 @@ public class WebSocketConnection extends WebSocketListener {
 
     private void saveEventData(String data) {
         disposables.add(parseEventDataObservable(data)
-                .map(deviceRepository::updateDevice)
                 .subscribeOn(Schedulers.io())
-                .subscribeWith(new DisposableObserver<Integer>() {
-                    @Override
-                    public void onNext(Integer aInt) {
-                        Timber.v("Updated " + aInt + " device");
-                    }
-                    @Override
-                    public void onError(Throwable e) {Timber.v(e);}
-                    @Override
-                    public void onComplete() {
-                    }
-                }));
+                .subscribe());
     }
-
-    private Observable<DeviceModel> parseEventDataObservable(String data) {
-        return Observable.create( e -> {
+    //Process new event updates received over websocket connection. Updates the device list and sends it
+    // and the id that changed to observers via BehaviorSubject.
+    private Completable parseEventDataObservable(String data) {
+        return Completable.create(e -> {
             try {
                 JSONObject device = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
                 String[] parts = device.getString("entity_id").split("\\.");
-                DeviceModel deviceModel = new DeviceModel(device.getString("entity_id"),
-                        device.getString("state"),
-                        device.getString("last_changed"),
-                        device.getString("attributes"),
-                        parts[0]);
-                e.onNext(deviceModel);
+                if(parts[0].equals(LIGHT_TYPE) || parts[0].equals(SENSOR_TYPE) || parts[0].equals(BINARY_SENSOR_TYPE)) {
+                    int i;
+                    for (i = 0; i < deviceModelsList.size(); i++) {
+                        if (deviceModelsList.get(i).getEntity_id().equals(device.getString("entity_id"))) {
+                            deviceModelsList.get(i).setAttributes(device.getString("attributes"));
+                            deviceModelsList.get(i).setState(device.getString("state"));
+                            deviceModelsList.get(i).setLast_changed(device.getString("last_changed"));
+                            break;
+                        }
+                    }
+                    deviceModelsBus.onNext(new DeviceListUpdateModel(i, deviceModelsList));
+                }
+                e.onComplete();
 
             } catch (JSONException d) {
                 e.onError(d);
@@ -326,6 +344,18 @@ public class WebSocketConnection extends WebSocketListener {
 
     public PublishSubject<Integer> getWebSocketEventsBus() {
         return webSocketEventsBus;
+    }
+
+    public BehaviorSubject<DeviceListUpdateModel> getDeviceModelsBus() { return  deviceModelsBus; }
+
+    public class DeviceListUpdateModel {
+        public final int updateID;
+        public final List<DeviceModel> list;
+
+        public DeviceListUpdateModel(int updateID, List<DeviceModel> list) {
+            this.updateID = updateID;
+            this.list = list;
+        }
     }
 
 }

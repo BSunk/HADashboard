@@ -9,10 +9,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.data.DataManager;
-import com.bsunk.hapanel.data.local.entity.DeviceModel;
+import com.bsunk.hapanel.data.model.DeviceModel;
+import com.bsunk.hapanel.data.remote.WebSocketConnection;
 import com.bsunk.hapanel.databinding.FragmentHomeBinding;
 import com.bsunk.hapanel.di.components.ActivityComponent;
 import com.bsunk.hapanel.di.components.DaggerActivityComponent;
@@ -31,6 +33,7 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
     private ActivityComponent mActivityComponent;
     private RecyclerView devicesRecyclerView;
     private DeviceAdapter adapter;
+    private ProgressBar progressBar;
 
     @Inject
     DataManager dataManager;
@@ -46,10 +49,10 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
                              Bundle savedInstanceState) {
         FragmentHomeBinding binding = FragmentHomeBinding.inflate(inflater, container, false);
         devicesRecyclerView = binding.devicesRv;
+        progressBar = binding.loading;
 
         activityComponent().inject(this);
         presenter.subscribe(this);
-        presenter.initDeviceList();
 
         return binding.getRoot();
     }
@@ -70,15 +73,28 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
         devicesRecyclerView.setLayoutManager(sglm);
         adapter = new DeviceAdapter(deviceModels);
         devicesRecyclerView.setAdapter(adapter);
+    }
 
-        //Data set changed. Update RecyclerView
-        dataManager.getDeviceRepository().getAllDevicesLiveData().observe(this, deviceModelList -> adapter.setItems(deviceModelList));
+    @Override
+    public void updateList(WebSocketConnection.DeviceListUpdateModel deviceListUpdateModel) {
+        if(adapter!=null) {
+            adapter.setItems(deviceListUpdateModel.list, deviceListUpdateModel.updateID);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         presenter.unSubscribe();
+    }
+
+    @Override
+    public void showHideLoading(boolean isHide) {
+        if(isHide) {
+            progressBar.setVisibility(View.GONE);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+        }
     }
 
 }

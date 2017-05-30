@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.bsunk.hapanel.R;
-import com.bsunk.hapanel.data.local.entity.DeviceModel;
 import com.bsunk.hapanel.data.model.BinarySensorModel;
+import com.bsunk.hapanel.data.model.DeviceModel;
 import com.bsunk.hapanel.data.model.LightModel;
 import com.bsunk.hapanel.data.model.SensorModel;
 import com.google.gson.Gson;
@@ -73,16 +73,17 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
         }
     }
 
-    public void setItems(List<DeviceModel> devices) {
+    public void setItems(List<DeviceModel> devices, int updateID) {
         this.devices = devices;
-
-        notifyDataSetChanged();
+        notifyItemChanged(updateID);
     }
 
     @Override
     public int getItemCount() {
         return devices.size();
     }
+
+
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         private final ViewDataBinding binding;

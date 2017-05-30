@@ -44,9 +44,6 @@ public class BindingAdapter {
                 colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         }
 
-        Timber.v(String.valueOf(colorFrom));
-        Timber.v(String.valueOf(colorTo));
-
         if (colorAnimation != null && colorFrom!=colorTo) {
             colorAnimation.setDuration(250); // milliseconds
             colorAnimation.addUpdateListener(animator -> cardView.setBackgroundColor((int) animator.getAnimatedValue()));
@@ -66,21 +63,6 @@ public class BindingAdapter {
         }
         if(state.equals("off")) {
             textView.setTextColor(Color.WHITE);
-        }
-    }
-
-    @android.databinding.BindingAdapter({"change_iv_tint", "state"})
-    public static void setIVColorDependingOnBackgroundColor(ImageView imageView, List<Integer> rgbColor, String state) {
-        if(rgbColor!=null) {
-            if((rgbColor.get(0)*0.299 + rgbColor.get(1)*0.587 + rgbColor.get(2)*0.114) < 186) {
-                imageView.setColorFilter(Color.WHITE);
-            }
-            else {
-                imageView.setColorFilter(Color.BLACK);
-            }
-        }
-        if(state.equals("off")) {
-            imageView.setColorFilter(Color.WHITE);
         }
     }
 
