@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import com.bsunk.hapanel.di.components.ActivityComponent;
 import com.bsunk.hapanel.di.components.DaggerActivityComponent;
 import com.bsunk.hapanel.di.modules.ActivityModule;
 import com.bsunk.hapanel.ui.adapter.DeviceAdapter;
+import com.bsunk.hapanel.ui.adapter.helper.OnStartDragListener;
+import com.bsunk.hapanel.ui.adapter.helper.SimpleItemTouchHelperCallback;
 
 import java.util.List;
 
@@ -28,12 +31,13 @@ import javax.inject.Inject;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends LifecycleFragment implements HomeFragmentContract.View {
+public class HomeFragment extends LifecycleFragment implements HomeFragmentContract.View, OnStartDragListener {
 
     private ActivityComponent mActivityComponent;
     private RecyclerView devicesRecyclerView;
     private DeviceAdapter adapter;
     private ProgressBar progressBar;
+    private ItemTouchHelper mItemTouchHelper;
 
     @Inject
     DataManager dataManager;
@@ -71,8 +75,12 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
     public void initializeRecyclerView(List<DeviceModel> deviceModels) {
         StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         devicesRecyclerView.setLayoutManager(sglm);
-        adapter = new DeviceAdapter(deviceModels);
+        adapter = new DeviceAdapter(deviceModels, this);
         devicesRecyclerView.setAdapter(adapter);
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(devicesRecyclerView);
     }
 
     @Override
@@ -97,4 +105,8 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
         }
     }
 
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
+    }
 }

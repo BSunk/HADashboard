@@ -2,9 +2,13 @@ package com.bsunk.hapanel.ui.adapter;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.bsunk.hapanel.R;
@@ -12,9 +16,12 @@ import com.bsunk.hapanel.data.model.BinarySensorModel;
 import com.bsunk.hapanel.data.model.DeviceModel;
 import com.bsunk.hapanel.data.model.LightModel;
 import com.bsunk.hapanel.data.model.SensorModel;
+import com.bsunk.hapanel.ui.adapter.helper.ItemTouchHelperAdapter;
+import com.bsunk.hapanel.ui.adapter.helper.ItemTouchHelperViewHolder;
+import com.bsunk.hapanel.ui.adapter.helper.OnStartDragListener;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static android.widget.Adapter.IGNORE_ITEM_VIEW_TYPE;
@@ -26,12 +33,14 @@ import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.SENSOR_TYPE;
  * Created by bryan on 4/13/17.
  */
 
-public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHolder> {
+public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHolder> implements ItemTouchHelperAdapter {
 
     private List<DeviceModel> devices;
+    private final OnStartDragListener mDragStartListener;
 
-    public DeviceAdapter(List<DeviceModel> devices) {
+    public DeviceAdapter(List<DeviceModel> devices, OnStartDragListener dragStartListener) {
         this.devices = devices;
+        mDragStartListener = dragStartListener;
     }
 
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -57,6 +66,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
                 holder.bind(binarySensorModel, devices.get(position));
                 break;
         }
+
+        holder.binding.getRoot().findViewById(R.id.drag_handle).setOnTouchListener((v, event) -> {
+            if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                mDragStartListener.onStartDrag(holder);
+            }
+            return false;
+        });
     }
 
     @Override
@@ -83,9 +99,21 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
         return devices.size();
     }
 
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(devices, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        devices.remove(position);
+        notifyItemRemoved(position);
+    }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
         private final ViewDataBinding binding;
 
         MyViewHolder(ViewDataBinding binding) {
@@ -97,6 +125,16 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
             binding.setVariable(BR.attributes, obj);
             binding.setVariable(BR.device, obj2);
             binding.executePendingBindings();
+        }
+
+        @Override
+        public void onItemSelected() {
+            //itemView.setBackgroundColor(Color.LTGRAY);
+        }
+
+        @Override
+        public void onItemClear() {
+            //itemView.setBackgroundColor(0);
         }
     }
 }
