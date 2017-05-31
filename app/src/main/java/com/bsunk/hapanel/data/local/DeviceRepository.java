@@ -6,8 +6,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 
 /**
  * Created by bryan on 5/19/17.

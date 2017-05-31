@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.bsunk.hapanel.R;
+import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.model.BinarySensorModel;
 import com.bsunk.hapanel.data.model.DeviceModel;
 import com.bsunk.hapanel.data.model.LightModel;
@@ -21,8 +22,11 @@ import com.bsunk.hapanel.ui.adapter.helper.ItemTouchHelperViewHolder;
 import com.bsunk.hapanel.ui.adapter.helper.OnStartDragListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import static android.widget.Adapter.IGNORE_ITEM_VIEW_TYPE;
 import static com.bsunk.hapanel.data.Constants.DEVICE_TYPE.BINARY_SENSOR_TYPE;
@@ -37,10 +41,14 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
 
     private List<DeviceModel> devices;
     private final OnStartDragListener mDragStartListener;
+    private DataManager dataManager;
 
-    public DeviceAdapter(List<DeviceModel> devices, OnStartDragListener dragStartListener) {
+    @Inject
+    public DeviceAdapter(List<DeviceModel> devices, OnStartDragListener dragStartListener, DataManager dataManager) {
         this.devices = devices;
         mDragStartListener = dragStartListener;
+        this.dataManager = dataManager;
+        saveDevicePositions();
     }
 
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -101,9 +109,29 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
-        Collections.swap(devices, fromPosition, toPosition);
+
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(devices, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(devices, i, i - 1);
+            }
+        }
         notifyItemMoved(fromPosition, toPosition);
+        saveDevicePositions();
         return true;
+    }
+
+    private void saveDevicePositions() {
+        List<String> listOfEntityIDs = new ArrayList<>();
+        for(DeviceModel deviceModel: devices) {
+            listOfEntityIDs.add(deviceModel.getEntity_id());
+        }
+
+        Gson gson = new Gson();
+        dataManager.getSharedPrefHelper().putHomeDevicesList(gson.toJson(listOfEntityIDs));
     }
 
     @Override

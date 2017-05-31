@@ -63,4 +63,19 @@ public class BindingAdapter {
         }
     }
 
+    @android.databinding.BindingAdapter({"change_image_color", "state"})
+    public static void setImageColorDependingOnBackgroundColor(ImageView imageView, List<Integer> rgbColor, String state) {
+        if(rgbColor!=null) {
+            if((rgbColor.get(0)*0.299 + rgbColor.get(1)*0.587 + rgbColor.get(2)*0.114) < 186) {
+                imageView.setColorFilter(Color.WHITE);
+            }
+            else {
+                imageView.setColorFilter(Color.BLACK);
+            }
+        }
+        if(state.equals("off")) {
+            imageView.setColorFilter(Color.WHITE);
+        }
+    }
+
 }

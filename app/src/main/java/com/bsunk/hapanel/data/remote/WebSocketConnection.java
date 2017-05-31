@@ -5,6 +5,8 @@ import com.bsunk.hapanel.data.local.DeviceRepository;
 import com.bsunk.hapanel.data.local.SharedPrefHelper;
 import com.bsunk.hapanel.data.local.entity.DeviceProperties;
 import com.bsunk.hapanel.data.model.DeviceModel;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +14,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,6 +24,7 @@ import io.reactivex.CompletableEmitter;
 import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
@@ -62,9 +66,7 @@ public class WebSocketConnection extends WebSocketListener {
     private final DeviceRepository deviceRepository;
     private PublishSubject<Integer> webSocketEventsBus = PublishSubject.create();
     private BehaviorSubject<DeviceListUpdateModel> deviceModelsBus = BehaviorSubject.create();
-
-    private final List<DeviceModel> deviceModelsList = new ArrayList<>();
-
+    private HashMap<String, DeviceModel> deviceModelHashMap = new HashMap<>();
     private final OkHttpClient mClient;
 
     private char[] pw;
@@ -260,44 +262,36 @@ public class WebSocketConnection extends WebSocketListener {
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.v("Error inserting devices");
                         Timber.v(e);
                     }
-
                     @Override
-                    public void onComplete() {
-                        Timber.v("Inserted/Updated Devices");
-                    }
+                    public void onComplete() {}
                 }));
     }
 
     private Observable<Void> parseStateDataObservable(String data) {
-        deviceModelsList.clear();
-        return Observable.create(e -> {
+        return Observable.create((ObservableEmitter<Void> e) -> {
             try {
                 JSONObject statesResult = new JSONObject(data);
                 JSONArray result = statesResult.getJSONArray("result");
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject device = result.getJSONObject(i);
                     String[] parts = device.getString("entity_id").split("\\.");
+
+                    //Get only devices that are supported by checking the type of device.
                     if(parts[0].equals(LIGHT_TYPE) || parts[0].equals(SENSOR_TYPE) || parts[0].equals(BINARY_SENSOR_TYPE)) {
                         DeviceModel deviceModel = new DeviceModel(device.getString("entity_id"),
                                 device.getString("state"),
                                 device.getString("last_changed"),
                                 device.getString("attributes"),
                                 parts[0]);
-                        deviceModelsList.add(deviceModel);
-                        DeviceProperties deviceProperties = new DeviceProperties(deviceModel.getEntity_id());
-                        //long id = deviceRepository.addDevice(deviceProperties);
-//                    if (id != -1) {
-//                        Timber.v("Inserted device with row ID: " + id + " and entityID: " + deviceModel.getEntity_id());
-//                    } else {
-//                        int updateID = deviceRepository.updateDevice(deviceProperties);
-//                        Timber.v("Updated " + updateID + " device with entityID " + deviceModel.getEntity_id());
-//                    }
+
+                        //Add to hashmap with entity_id as key and devicemodel as value.
+                        deviceModelHashMap.put(device.getString("entity_id"), deviceModel);
                     }
                 }
-                deviceModelsBus.onNext(new DeviceListUpdateModel(-1, deviceModelsList));
+
+                deviceModelsBus.onNext(new DeviceListUpdateModel(-1, getSortedDeviceList(deviceModelHashMap)));
                 e.onComplete();
             }
             catch (JSONException j) {
@@ -316,19 +310,23 @@ public class WebSocketConnection extends WebSocketListener {
     private Completable parseEventDataObservable(String data) {
         return Completable.create(e -> {
             try {
+
                 JSONObject device = new JSONObject(data).getJSONObject("event").getJSONObject("data").getJSONObject("new_state");
                 String[] parts = device.getString("entity_id").split("\\.");
                 if(parts[0].equals(LIGHT_TYPE) || parts[0].equals(SENSOR_TYPE) || parts[0].equals(BINARY_SENSOR_TYPE)) {
+
+                    List<DeviceModel> sortedDeviceList = getSortedDeviceList(deviceModelHashMap);
+
                     int i;
-                    for (i = 0; i < deviceModelsList.size(); i++) {
-                        if (deviceModelsList.get(i).getEntity_id().equals(device.getString("entity_id"))) {
-                            deviceModelsList.get(i).setAttributes(device.getString("attributes"));
-                            deviceModelsList.get(i).setState(device.getString("state"));
-                            deviceModelsList.get(i).setLast_changed(device.getString("last_changed"));
+                    for (i = 0; i < sortedDeviceList.size(); i++) {
+                        if (sortedDeviceList.get(i).getEntity_id().equals(device.getString("entity_id"))) {
+                            sortedDeviceList.get(i).setAttributes(device.getString("attributes"));
+                            sortedDeviceList.get(i).setState(device.getString("state"));
+                            sortedDeviceList.get(i).setLast_changed(device.getString("last_changed"));
+                            deviceModelsBus.onNext(new DeviceListUpdateModel(i, sortedDeviceList));
                             break;
                         }
                     }
-                    deviceModelsBus.onNext(new DeviceListUpdateModel(i, deviceModelsList));
                 }
                 e.onComplete();
 
@@ -336,6 +334,29 @@ public class WebSocketConnection extends WebSocketListener {
                 e.onError(d);
             }
         });
+    }
+
+    private List<DeviceModel> getSortedDeviceList(HashMap<String, DeviceModel> hashMap) {
+        HashMap<String, DeviceModel> hashMap1 = (HashMap) hashMap.clone();
+
+        //Add to a new sorted list by iterating through the queried list stored in the DB.
+        List<DeviceModel> sortedList = new ArrayList<>();
+        String jsonListOfSortedDeviceId = sharedPrefHelper.getHomeDevicesList();
+
+        if (!jsonListOfSortedDeviceId.isEmpty()) {
+            Gson gson = new Gson();
+            List<String> listOfSortedDevices = gson.fromJson(jsonListOfSortedDeviceId, new TypeToken<List<String>>() {
+            }.getType());
+
+            if (listOfSortedDevices != null && listOfSortedDevices.size() > 0) {
+                for (String entityID : listOfSortedDevices) {
+                    sortedList.add(hashMap1.get(entityID));
+                    hashMap1.remove(entityID);
+                }
+            }
+        }
+        sortedList.addAll(hashMap1.values());
+        return sortedList;
     }
 
     public void onDestroy() {

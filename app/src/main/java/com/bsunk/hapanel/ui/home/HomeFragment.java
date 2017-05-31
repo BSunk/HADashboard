@@ -75,7 +75,7 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
     public void initializeRecyclerView(List<DeviceModel> deviceModels) {
         StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         devicesRecyclerView.setLayoutManager(sglm);
-        adapter = new DeviceAdapter(deviceModels, this);
+        adapter = new DeviceAdapter(deviceModels, this, dataManager);
         devicesRecyclerView.setAdapter(adapter);
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);

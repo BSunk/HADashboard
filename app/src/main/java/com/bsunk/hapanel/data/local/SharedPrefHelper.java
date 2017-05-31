@@ -5,10 +5,9 @@ import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 
-import timber.log.Timber;
-
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_FILE_NAME;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_FIRST_LAUNCH;
+import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_HOME_SORTED;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_IP;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_LAT;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_LOCATION_NAME;
@@ -23,6 +22,7 @@ import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_VERSION;
  */
 
 public class SharedPrefHelper {
+
 
     private SharedPreferences mSharedPreferences;
 
@@ -85,6 +85,14 @@ public class SharedPrefHelper {
 
     public String getLocationName() {
         return mSharedPreferences.getString(PREF_KEY_LOCATION_NAME, null);
+    }
+
+    public void putHomeDevicesList(String data) {
+        mSharedPreferences.edit().putString(PREF_KEY_HOME_SORTED, data).apply();
+    }
+
+    public String getHomeDevicesList() {
+        return mSharedPreferences.getString(PREF_KEY_HOME_SORTED, "");
     }
 
     public String getLongitude() {

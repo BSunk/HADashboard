@@ -28,6 +28,7 @@ public class Constants {
         String PREF_KEY_LAT = "PREF_KEY_LAT";
         String PREF_KEY_LONG = "PREF_KEY_LONG";
         String PREF_KEY_VERSION = "PREF_KEY_VERSION";
+        String PREF_KEY_HOME_SORTED = "pref_key_home_sorted";
     }
 
     public interface WEB_SOCKET_EVENTS {
