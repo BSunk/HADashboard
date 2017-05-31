@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 
+import android.graphics.drawable.Animatable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -94,12 +95,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     public void setConnectionImage(int event) {
         switch (event) {
             case EVENT_CONNECTED:
-                binding.connectionIv.setImageDrawable(getDrawable(R.drawable.ic_check_black_24dp));
-                binding.connectionBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.connection_box_background_connected));
+                ((Animatable) binding.connectionIv.getDrawable()).start();
                 break;
             case EVENT_FAILED:
-                binding.connectionIv.setImageDrawable(getDrawable(R.drawable.ic_error_outline_black_24dp));
-                binding.connectionBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.connection_box_background_disconnected));
+                ((Animatable) binding.connectionIv.getDrawable()).stop();
+                break;
         }
     }
 

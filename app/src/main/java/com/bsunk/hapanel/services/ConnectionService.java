@@ -102,7 +102,7 @@ public class ConnectionService extends Service {
             disposables.add(connectToServerCompletable("192.168.10.113", "8123", "").subscribe());
         }
 
-        return Service.START_STICKY;
+        return Service.START_NOT_STICKY;
     }
 
     @Override

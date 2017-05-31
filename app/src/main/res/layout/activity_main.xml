@@ -13,43 +13,57 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:background="@color/bottom_nav_background"
-            android:weightSum="1"
-            android:id="@+id/linearLayout">
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-            <TextView
-                android:id="@+id/ha_location_name"
-                android:textSize="18sp"
-                android:layout_marginStart="15dp"
-                android:maxLines="1"
-                android:layout_gravity="center"
-                android:layout_weight=".90"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/connection_background"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".10">
+                <TextView
+                    android:id="@+id/ha_location_name"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginStart="10dp"
+                    android:maxLines="1"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
                 <ImageView
                     android:id="@+id/connection_iv"
-                    android:layout_width="match_parent"
-                    android:tint="@android:color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:src="@drawable/connect_disconnect"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
 
-            </FrameLayout>
+            </RelativeLayout>
 
-        </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:layout_marginStart="20dp"-->
+        <!--android:layout_marginEnd="20dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:background="@color/bottom_nav_background"-->
+        <!--android:weightSum="1"-->
+        <!--android:id="@+id/linearLayout">-->
+
+
+
+        <!--</LinearLayout>-->
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_navigation"

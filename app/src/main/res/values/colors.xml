@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimary">#d8f4ecec</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#8ca1f5</color>
     <color name="page1">#566fff</color>
     <color name="page2">#7780b6</color>
-    <color name="background">#e4e4e4</color>
+    <color name="background">#101010</color>
     <color name="bottom_nav_background">#d73b4d54</color>
     <color name="textColor">#ffffff</color>
     <color name="connection_box_background_disconnected">#afab3c3c</color>
