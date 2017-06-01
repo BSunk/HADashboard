@@ -15,14 +15,12 @@
     <string name="ws_no_info">Set up server information</string>
 
     <!--Bottom Navigation-->
-    <string name="text_groups">Groups</string>
-    <string name="text_home">Home</string>
-    <string name="text_settings">Settings</string>
+    <string name="text_groups">groups</string>
+    <string name="text_home">home</string>
+    <string name="text_settings">settings</string>
     <string name="retry_notification_button">Retry</string>
     <string name="reconnect_notification_button">Reconnect</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="light_item_arc_brightness_text">brightness</string>
     <string name="light_item_bulb_content_description">Click to turn on or off</string>
     <string name="drag_handle_contentdescription">Drag handle</string>

@@ -25,6 +25,7 @@ import com.bsunk.hapanel.di.modules.ActivityModule;
 import com.bsunk.hapanel.services.ConnectionService;
 import com.bsunk.hapanel.data.Constants;
 import com.bsunk.hapanel.ui.home.HomeFragment;
+import com.bsunk.hapanel.ui.settings.SettingsFragment;
 
 import javax.inject.Inject;
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     private ActivityMainBinding binding;
     private ActivityComponent mActivityComponent;
+    private ImageView editIV;
 
     @Inject
     MainActivityPresenter presenter;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         super.onCreate(savedInstanceState);
         activityComponent().inject(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        editIV = binding.editIv;
         presenter.subscribe(this);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
@@ -124,8 +127,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.action_home) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
+        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
+        Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fadeout);
+        switch (item.getItemId()) {
+            case R.id.action_home:
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
+                editIV.setVisibility(View.VISIBLE);
+                editIV.startAnimation(fadeIn);
+                break;
+            case R.id.action_settings:
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, new SettingsFragment(), "").commit();
+                editIV.setVisibility(View.GONE);
+                editIV.startAnimation(fadeOut);
+                break;
         }
         return true;
     }

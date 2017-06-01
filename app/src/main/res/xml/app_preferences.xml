@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory
+        android:title="General">
 
+        <CheckBoxPreference
+            android:key="pref_screen_on"
+            android:title="Leave screen on"
+            android:defaultValue="off"/>
+
+    </PreferenceCategory>
 
 
 </PreferenceScreen>
