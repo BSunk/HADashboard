@@ -10,9 +10,13 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bsunk.hapanel.HAApplication;
+import com.bsunk.hapanel.R;
 import com.bsunk.hapanel.data.DataManager;
 import com.bsunk.hapanel.data.model.DeviceModel;
 import com.bsunk.hapanel.data.remote.WebSocketConnection;
@@ -38,6 +42,7 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
     private DeviceAdapter adapter;
     private ProgressBar progressBar;
     private ItemTouchHelper mItemTouchHelper;
+    private boolean editMode = false;
 
     @Inject
     DataManager dataManager;
@@ -54,6 +59,9 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
         FragmentHomeBinding binding = FragmentHomeBinding.inflate(inflater, container, false);
         devicesRecyclerView = binding.devicesRv;
         progressBar = binding.loading;
+
+        //Edit button on click
+        getActivity().findViewById(R.id.edit_iv).setOnClickListener(this::setEditModeVisibility);
 
         activityComponent().inject(this);
         presenter.subscribe(this);
@@ -109,4 +117,23 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
     }
+
+    private void setEditModeVisibility(View v) {
+        Animation rotate = AnimationUtils.loadAnimation(getContext(), R.anim.rotate);
+
+        if(!editMode) {
+            v.startAnimation(rotate);
+            ((ImageView) v).setColorFilter(getResources().getColor(R.color.colorPrimaryDark));
+            editMode = true;
+        }
+        else {
+            v.startAnimation(rotate);
+            ((ImageView) v).setColorFilter(getResources().getColor(android.R.color.black));
+            editMode = false;
+        }
+        if(adapter!=null) {
+            adapter.setVisibilityEditMode(editMode);
+        }
+    }
+
 }

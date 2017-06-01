@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#d8f4ecec</color>
+    <color name="colorPrimary">#bcf4ecec</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#8ca1f5</color>
+
     <color name="page1">#566fff</color>
     <color name="page2">#7780b6</color>
-    <color name="background">#101010</color>
-    <color name="bottom_nav_background">#d73b4d54</color>
+
     <color name="textColor">#ffffff</color>
-    <color name="connection_box_background_disconnected">#afab3c3c</color>
-    <color name="connection_box_background_connected">#af0c9150</color>
-    <color name="light_item_background">#e27655</color>
+
+    <color name="background">#101010</color>
     <color name="sensor_item_background">#e3413e3d</color>
-    <color name="binary_sensor_item_background">#dccac7c7</color>
+    <color name="binary_sensor_item_background">#dcbe998d</color>
+
     <color name="binary_sensor_item_indicator_on">#c60c1f</color>
     <color name="binary_sensor_item_indicator_off">#ffffff</color>
     <color name="binary_sensor_item_indicator_outer_color">#c6b3b5</color>

@@ -42,6 +42,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
     private List<DeviceModel> devices;
     private final OnStartDragListener mDragStartListener;
     private DataManager dataManager;
+    private boolean isEditMode;
 
     @Inject
     public DeviceAdapter(List<DeviceModel> devices, OnStartDragListener dragStartListener, DataManager dataManager) {
@@ -75,6 +76,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
                 break;
         }
 
+        if(isEditMode) holder.binding.getRoot().findViewById(R.id.device_properties_layout).setVisibility(View.VISIBLE);
+        else holder.binding.getRoot().findViewById(R.id.device_properties_layout).setVisibility(View.GONE);
+
         holder.binding.getRoot().findViewById(R.id.drag_handle).setOnTouchListener((v, event) -> {
             if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
                 mDragStartListener.onStartDrag(holder);
@@ -100,6 +104,11 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.MyViewHold
     public void setItems(List<DeviceModel> devices, int updateID) {
         this.devices = devices;
         notifyItemChanged(updateID);
+    }
+
+    public void setVisibilityEditMode(boolean isEditMode) {
+        this.isEditMode = isEditMode;
+        notifyItemRangeChanged(0, devices.size());
     }
 
     @Override

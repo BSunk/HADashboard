@@ -5,10 +5,16 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 
 import android.graphics.drawable.Animatable;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
@@ -28,7 +34,8 @@ import static com.bsunk.hapanel.data.Constants.WEB_SOCKET_EVENTS.EVENT_FAILED;
 //Main activity that contains the bottom navigation bar and the top
 // status bar indicating connection status.
 
-public class MainActivity extends AppCompatActivity implements MainActivityContract.View{
+public class MainActivity extends AppCompatActivity implements MainActivityContract.View,
+        BottomNavigationView.OnNavigationItemSelectedListener {
 
     private ActivityMainBinding binding;
     private ActivityComponent mActivityComponent;
@@ -43,12 +50,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         presenter.subscribe(this);
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
-            if(item.getItemId()==R.id.action_home) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
-            }
-            return true;
-        });
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
+
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(this);
 
         //hide navbar and status bar on config change
         onWindowFocusChanged(true);
@@ -118,4 +122,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==R.id.action_home) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
+        }
+        return true;
+    }
 }
