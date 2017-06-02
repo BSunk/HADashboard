@@ -7,14 +7,16 @@ import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Animatable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
@@ -26,6 +28,7 @@ import com.bsunk.hapanel.services.ConnectionService;
 import com.bsunk.hapanel.data.Constants;
 import com.bsunk.hapanel.ui.home.HomeFragment;
 import com.bsunk.hapanel.ui.settings.SettingsFragment;
+import com.bsunk.hapanel.ui.utils.PreferencesUtils;
 
 import javax.inject.Inject;
 
@@ -53,9 +56,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         editIV = binding.editIv;
         presenter.subscribe(this);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
-
         binding.bottomNavigation.setOnNavigationItemSelectedListener(this);
+        binding.bottomNavigation.setSelectedItemId(R.id.action_home);
 
         //hide navbar and status bar on config change
         onWindowFocusChanged(true);
@@ -92,10 +94,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
 
     public void setTitle(String name) {
         if (name!=null) {
-            binding.haLocationName.setText(name);
+            binding.toolbarTitle.setText(name);
         }
         else {
-            binding.haLocationName.setText(getString(R.string.app_name));
+            binding.toolbarTitle.setText(getString(R.string.app_name));
         }
     }
 
@@ -126,16 +128,33 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     }
 
     @Override
+    public void keepScreenOn(boolean shouldKeepOn) {
+        PreferencesUtils.keepScreenOn(shouldKeepOn, this);
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
         Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         switch (item.getItemId()) {
+
             case R.id.action_home:
+                FrameLayout frameLayout1 = (FrameLayout) findViewById(R.id.container);
+                RelativeLayout.LayoutParams params1 = (RelativeLayout.LayoutParams)frameLayout1.getLayoutParams();
+                params1.removeRule(RelativeLayout.BELOW);
+                frameLayout1.setLayoutParams(params1);
+                presenter.initToolbarTitle();
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, new HomeFragment(), "").commit();
-                editIV.setVisibility(View.VISIBLE);
                 editIV.startAnimation(fadeIn);
+                editIV.setVisibility(View.VISIBLE);
                 break;
+
             case R.id.action_settings:
+                FrameLayout frameLayout = (FrameLayout) findViewById(R.id.container);
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)frameLayout.getLayoutParams();
+                params.addRule(RelativeLayout.BELOW, R.id.my_toolbar);
+                frameLayout.setLayoutParams(params);
+                binding.toolbarTitle.setText(getResources().getString(R.string.text_settings));
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, new SettingsFragment(), "").commit();
                 editIV.setVisibility(View.GONE);
                 editIV.startAnimation(fadeOut);

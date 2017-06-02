@@ -11,6 +11,7 @@ public interface MainActivityContract {
         void startStopConnectionService(boolean shouldStart);
         void setTitle(String name);
         void setConnectionImage(int event);
+        void keepScreenOn(boolean shouldKeepOn);
 
     }
 
@@ -19,6 +20,7 @@ public interface MainActivityContract {
         void subscribe(MainActivityContract.View view);
         void unSubscribe();
         void setView(MainActivityContract.View view);
+        void initToolbarTitle();
 
     }
 }

@@ -6,8 +6,13 @@
 
         <CheckBoxPreference
             android:key="pref_screen_on"
-            android:title="Leave screen on"
+            android:title="Keep screen on"
             android:defaultValue="off"/>
+
+        <EditTextPreference
+            android:key="pref_toolbar_title"
+            android:title="Set toolbar title"
+            android:dialogTitle="Set toolbar title"/>
 
     </PreferenceCategory>
 

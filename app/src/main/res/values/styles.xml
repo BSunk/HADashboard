@@ -1,26 +1,30 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/textColor</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
-        <item name="preferenceTheme">@style/preference_theme</item>
+        <item name="preferenceTheme"> @style/my_preference_theme</item>
+        <item name="android:textColorPrimary">@color/textColor</item>
+        <item name="android:textColorSecondary">@color/colorAccent</item>
+        <item name="android:textColorPrimaryInverse">@android:color/background_dark</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:textColorSecondaryInverse">@android:color/background_dark</item>
+
         <!--<item name="android:windowLightStatusBar" tools:targetApi="23">true</item>-->
     </style>
 
-    <style name="preference_theme" parent="@style/PreferenceThemeOverlay">
-        <item name="android:textColorSecondary">#CCC</item>
-        <item name="android:textColorPrimary">#CCC</item>
-        <item name="android:textColor">#CCC</item>
+
+    <style name="my_preference_theme" parent="PreferenceThemeOverlay.v14.Material">
     </style>
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">

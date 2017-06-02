@@ -28,7 +28,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/ha_location_name"
+                    android:id="@+id/toolbar_title"
                     android:textSize="18sp"
                     android:textColor="@android:color/black"
                     android:layout_marginStart="10dp"

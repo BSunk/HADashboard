@@ -2,6 +2,7 @@ package com.bsunk.hapanel.data.local;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import javax.inject.Inject;
 
@@ -15,6 +16,7 @@ import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_LONG;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_PORT;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_PW;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_TIME_ZONE;
+import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_TOOLBAR_TITLE;
 import static com.bsunk.hapanel.data.Constants.SHARED_PREFS.PREF_KEY_VERSION;
 
 /**
@@ -25,10 +27,12 @@ public class SharedPrefHelper {
 
 
     private SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferencesManager;
 
     @Inject
     public SharedPrefHelper(Context context) {
         mSharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+        mSharedPreferencesManager = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public void putIP(String ip) {
@@ -67,6 +71,10 @@ public class SharedPrefHelper {
         mSharedPreferences.edit().putString(PREF_KEY_LOCATION_NAME, data).apply();
     }
 
+    public void putToolbarTitle(String data) {
+        mSharedPreferences.edit().putString(PREF_KEY_TOOLBAR_TITLE, data).apply();
+    }
+
     public void putTimeZone(String data) {
         mSharedPreferences.edit().putString(PREF_KEY_TIME_ZONE, data).apply();
     }
@@ -85,6 +93,10 @@ public class SharedPrefHelper {
 
     public String getLocationName() {
         return mSharedPreferences.getString(PREF_KEY_LOCATION_NAME, null);
+    }
+
+    public String getToolbarTitle() {
+        return mSharedPreferences.getString(PREF_KEY_TOOLBAR_TITLE, null);
     }
 
     public void putHomeDevicesList(String data) {
@@ -109,6 +121,10 @@ public class SharedPrefHelper {
 
     public String getHAVersion() {
         return mSharedPreferences.getString(PREF_KEY_VERSION, null);
+    }
+
+    public boolean getScreenOn() {
+        return mSharedPreferencesManager.getBoolean("pref_screen_on", false);
     }
 
 }

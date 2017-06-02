@@ -33,7 +33,7 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
         setView(view);
         disposables.add(subscribeToWebSocketEvents());
         mView.startStopConnectionService(true);
-        mView.setTitle(dataManager.getSharedPrefHelper().getLocationName());
+        initStartupPreferences();
     }
 
     public void unSubscribe() {
@@ -44,6 +44,18 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
 
     public void setView(MainActivityContract.View view) {
         mView = view;
+    }
+
+    @Override
+    public void initToolbarTitle() {
+        mView.setTitle(dataManager.getSharedPrefHelper().getToolbarTitle());
+    }
+
+    private void initStartupPreferences() {
+        //Manages the screen on pref
+        mView.keepScreenOn(dataManager.getSharedPrefHelper().getScreenOn());
+
+
     }
 
     //Subscribes to websocket events and calls the view to change the connection image and color

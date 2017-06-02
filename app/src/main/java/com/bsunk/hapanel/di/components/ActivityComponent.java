@@ -4,6 +4,7 @@ import com.bsunk.hapanel.di.PerActivity;
 import com.bsunk.hapanel.di.modules.ActivityModule;
 import com.bsunk.hapanel.ui.home.HomeFragment;
 import com.bsunk.hapanel.ui.main.MainActivity;
+import com.bsunk.hapanel.ui.settings.SettingsFragment;
 
 import dagger.Component;
 
@@ -17,5 +18,6 @@ public interface ActivityComponent {
 
     void inject(MainActivity mainActivity);
     void inject(HomeFragment homeFragment);
+    void inject(SettingsFragment settingsFragment);
 
 }

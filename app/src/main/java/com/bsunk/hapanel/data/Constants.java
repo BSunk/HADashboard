@@ -24,6 +24,7 @@ public class Constants {
         String PREF_KEY_FIRST_LAUNCH = "PREF_KEY_FIRST_LAUNCH";
 
         String PREF_KEY_LOCATION_NAME = "PREF_KEY_LOCATION_NAME";
+        String PREF_KEY_TOOLBAR_TITLE = "PREF_KEY_TOOLBAR_TITLE";
         String PREF_KEY_TIME_ZONE = "PREF_KEY_TIME_ZONE";
         String PREF_KEY_LAT = "PREF_KEY_LAT";
         String PREF_KEY_LONG = "PREF_KEY_LONG";
