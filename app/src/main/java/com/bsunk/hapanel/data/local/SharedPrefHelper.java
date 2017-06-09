@@ -95,10 +95,6 @@ public class SharedPrefHelper {
         return mSharedPreferences.getString(PREF_KEY_LOCATION_NAME, null);
     }
 
-    public String getToolbarTitle() {
-        return mSharedPreferences.getString(PREF_KEY_TOOLBAR_TITLE, null);
-    }
-
     public void putHomeDevicesList(String data) {
         mSharedPreferences.edit().putString(PREF_KEY_HOME_SORTED, data).apply();
     }
@@ -125,6 +121,10 @@ public class SharedPrefHelper {
 
     public boolean getScreenOn() {
         return mSharedPreferencesManager.getBoolean("pref_screen_on", false);
+    }
+
+    public String getToolbarTitle() {
+        return mSharedPreferencesManager.getString("pref_toolbar_title", "HA Panel");
     }
 
 }

@@ -54,8 +54,6 @@ public class MainActivityPresenter implements MainActivityContract.Presenter {
     private void initStartupPreferences() {
         //Manages the screen on pref
         mView.keepScreenOn(dataManager.getSharedPrefHelper().getScreenOn());
-
-
     }
 
     //Subscribes to websocket events and calls the view to change the connection image and color

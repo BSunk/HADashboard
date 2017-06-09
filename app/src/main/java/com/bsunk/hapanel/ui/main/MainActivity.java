@@ -93,12 +93,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     }
 
     public void setTitle(String name) {
-        if (name!=null) {
-            binding.toolbarTitle.setText(name);
-        }
-        else {
-            binding.toolbarTitle.setText(getString(R.string.app_name));
-        }
+        binding.toolbarTitle.setText(name);
     }
 
     public void setConnectionImage(int event) {

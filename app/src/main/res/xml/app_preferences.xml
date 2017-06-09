@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="General">
+        android:title="@string/preference_category_title_general">
 
         <CheckBoxPreference
             android:key="pref_screen_on"
@@ -11,8 +11,8 @@
 
         <EditTextPreference
             android:key="pref_toolbar_title"
-            android:title="Set toolbar title"
-            android:dialogTitle="Set toolbar title"/>
+            android:title="@string/preference_edit_text_title_change_toolbar_title"
+            android:dialogTitle="@string/preference_edit_text_title_change_toolbar_title"/>
 
     </PreferenceCategory>
 

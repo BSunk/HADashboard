@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -43,6 +44,7 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
     private ProgressBar progressBar;
     private ItemTouchHelper mItemTouchHelper;
     private boolean editMode = false;
+
 
     @Inject
     DataManager dataManager;
@@ -81,14 +83,25 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
 
     @Override
     public void initializeRecyclerView(List<DeviceModel> deviceModels) {
+        //Animation on list start
+        Animation fadeIn = AnimationUtils.loadAnimation(getContext(), R.anim.fadein);
+        fadeIn.setDuration(500);
+        Animation slideUp = AnimationUtils.loadAnimation(getContext(), R.anim.slideup);
+        AnimationSet animationSet = new AnimationSet(true);
+        animationSet.addAnimation(fadeIn);
+        animationSet.addAnimation(slideUp);
+        devicesRecyclerView.startAnimation(animationSet);
+
         StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         devicesRecyclerView.setLayoutManager(sglm);
         adapter = new DeviceAdapter(deviceModels, this, dataManager);
         devicesRecyclerView.setAdapter(adapter);
 
+        //For drag and drop
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(devicesRecyclerView);
+
     }
 
     @Override
@@ -102,6 +115,7 @@ public class HomeFragment extends LifecycleFragment implements HomeFragmentContr
     public void onDestroy() {
         super.onDestroy();
         presenter.unSubscribe();
+        if(editMode) setEditModeVisibility(getActivity().findViewById(R.id.edit_iv));
     }
 
     @Override

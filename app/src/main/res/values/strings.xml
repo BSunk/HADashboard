@@ -18,11 +18,22 @@
     <string name="text_groups">Groups</string>
     <string name="text_home">Home</string>
     <string name="text_settings">Settings</string>
+
+    <!--Notifications-->
     <string name="retry_notification_button">Retry</string>
     <string name="reconnect_notification_button">Reconnect</string>
 
+    <!--Content Descriptions-->
     <string name="light_item_arc_brightness_text">brightness</string>
     <string name="light_item_bulb_content_description">Click to turn on or off</string>
     <string name="drag_handle_contentdescription">Drag handle</string>
+
+    <!--Preferences-->
+    <string name="preference_edit_text_title_change_toolbar_title">Change toolbar title</string>
+    <string name="preference_category_title_general">General</string>
+    <string name="preference_edit_text_summary_change_toolbar_title">Currently set to: %1$s</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -3,7 +3,6 @@ package com.bsunk.hapanel.ui.settings;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -18,8 +17,6 @@ import com.bsunk.hapanel.di.modules.ActivityModule;
 import com.bsunk.hapanel.ui.utils.PreferencesUtils;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,14 +43,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         super.onCreate(savedInstanceState);
         activityComponent().inject(this);
 
-        CheckBoxPreference screenOnPref = (CheckBoxPreference) getPreferenceManager().findPreference("pref_screen_on");
         EditTextPreference toolbarTitlePref = (EditTextPreference) getPreferenceManager().findPreference("pref_toolbar_title");
 
-        toolbarTitlePref.setDialogMessage(dataManager.getSharedPrefHelper().getToolbarTitle());
+        //Sets summary and initial dialog message for change_title_edit_text_pref
+        String titleName = dataManager.getSharedPrefHelper().getToolbarTitle();
+        toolbarTitlePref.setSummary(getString(R.string.preference_edit_text_summary_change_toolbar_title, titleName));
+        toolbarTitlePref.setDialogMessage(titleName);
 
-
-
-//        screenOnPref.setOnPreferenceChangeListener((preference, o) -> false);
     }
 
     public ActivityComponent activityComponent() {
@@ -86,10 +82,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
             case "pref_screen_on":
-                Preference pref = findPreference(key);
-                boolean keepScreenOn = pref.getSharedPreferences().getBoolean("pref_screen_on", false);
+                boolean keepScreenOn = findPreference(key).getSharedPreferences().getBoolean("pref_screen_on", false);
                 PreferencesUtils.keepScreenOn(keepScreenOn, getActivity());
                 break;
+            case "pref_toolbar_title":
+                Preference pref = findPreference(key);
+                String titleName = dataManager.getSharedPrefHelper().getToolbarTitle();
+                pref.setSummary(getString(R.string.preference_edit_text_summary_change_toolbar_title, titleName));
+
         }
     }
 }
