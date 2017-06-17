@@ -26,6 +26,7 @@ import com.bsunk.hapanel.di.components.DaggerActivityComponent;
 import com.bsunk.hapanel.di.modules.ActivityModule;
 import com.bsunk.hapanel.services.ConnectionService;
 import com.bsunk.hapanel.data.Constants;
+import com.bsunk.hapanel.ui.groups.GroupsFragment;
 import com.bsunk.hapanel.ui.home.HomeFragment;
 import com.bsunk.hapanel.ui.settings.SettingsFragment;
 import com.bsunk.hapanel.ui.utils.PreferencesUtils;
@@ -153,6 +154,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, new SettingsFragment(), "").commit();
                 editIV.setVisibility(View.GONE);
                 editIV.startAnimation(fadeOut);
+                break;
+
+            case R.id.action_groups:
+                FrameLayout frameLayout2 = (FrameLayout) findViewById(R.id.container);
+                RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams)frameLayout2.getLayoutParams();
+                params2.removeRule(RelativeLayout.BELOW);
+                frameLayout2.setLayoutParams(params2);
+                presenter.initToolbarTitle();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, new GroupsFragment(), "").commit();
+                editIV.startAnimation(fadeIn);
+                editIV.setVisibility(View.GONE);
                 break;
         }
         return true;
