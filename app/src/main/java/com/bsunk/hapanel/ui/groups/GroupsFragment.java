@@ -9,9 +9,12 @@ import android.view.ViewGroup;
 
 import com.bsunk.hapanel.HAApplication;
 import com.bsunk.hapanel.R;
+import com.bsunk.hapanel.data.model.DeviceModel;
 import com.bsunk.hapanel.di.components.ActivityComponent;
 import com.bsunk.hapanel.di.components.DaggerActivityComponent;
 import com.bsunk.hapanel.di.modules.ActivityModule;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -50,6 +53,10 @@ public class GroupsFragment extends Fragment implements GroupsContract.View {
                     .build();
         }
         return mActivityComponent;
+    }
+
+    public void initializeList(List<DeviceModel> deviceModels) {
+
     }
 
 }
