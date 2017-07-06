@@ -2,6 +2,7 @@ package com.bsunk.hapanel.di.components;
 
 import com.bsunk.hapanel.di.PerActivity;
 import com.bsunk.hapanel.di.modules.ActivityModule;
+import com.bsunk.hapanel.ui.LauncherActivity;
 import com.bsunk.hapanel.ui.groups.GroupsFragment;
 import com.bsunk.hapanel.ui.home.HomeFragment;
 import com.bsunk.hapanel.ui.main.MainActivity;
@@ -21,5 +22,6 @@ public interface ActivityComponent {
     void inject(HomeFragment homeFragment);
     void inject(SettingsFragment settingsFragment);
     void inject(GroupsFragment groupsFragment);
+    void inject(LauncherActivity launcherActivity);
 
 }
